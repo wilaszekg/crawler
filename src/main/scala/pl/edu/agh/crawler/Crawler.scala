@@ -5,28 +5,32 @@ import java.io.{File, PrintWriter}
 import org.openqa.selenium.phantomjs.PhantomJSDriver
 import pl.edu.agh.crawler.browser.Browser
 
-class Crawler(val driver: PhantomJSDriver, val url: String) {
+class Crawler(val driver: PhantomJSDriver) {
 
-  def crawl = {
-    driver.navigate().to("http://google.com")
-    val browser: Browser = new Browser(driver)
+  val browser: Browser = new Browser(driver)
+  var busy = false
+
+  def crawl(task: CrawlingTask) = {
     val start = System.currentTimeMillis()
-    browser.goTo(url)
-    val end = System.currentTimeMillis()
-    println("Time: " + (end - start))
+    browser.goTo(task.url)
+
+    val loadTime = System.currentTimeMillis() - start
 
     browser.prepareCustomScripts
     browser.executeCrawlingScripts
 
     browser.waitUntilAjaxCompleted
+    browser.waitUntilDomStable
 
-    Thread.sleep(1000)
-    val removedText = browser.getRemovedText
+    val crawlTime = System.currentTimeMillis() - start
 
-    println(removedText)
-    val writer: PrintWriter = new PrintWriter(new File("crawled.html"))
-    writer.write(driver.getPageSource)
-
+    new CrawlResult(task,
+      driver.getPageSource,
+      browser.getRemovedText,
+      new CrawlingStatistics(loadTime, crawlTime))
   }
+
+  def cleanBrowser = browser.cleanUp
+
 
 }

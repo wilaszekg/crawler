@@ -20,14 +20,14 @@ var page = webPage.create();
  };
  */
 
-page.onResourceRequested = function (requestData, networkRequest) {
+/*page.onResourceRequested = function (requestData, networkRequest) {
     console.log('Request (#' + requestData.id + '): ' + JSON.stringify(requestData));
     console.log(JSON.stringify(networkRequest));
 };
 
-page.onResourceReceived = function(response) {
+page.onResourceReceived = function (response) {
     console.log('Response (#' + response.id + ', stage "' + response.stage + '"): ' + JSON.stringify(response));
-};
+};*/
 
 function click(el) {
     var ev = document.createEvent("MouseEvent");
@@ -58,6 +58,8 @@ page.open("http://localhost:8000", function (status) {
      fs.write('page.html', page.evaluate(function () {
      return document.getElementsByTagName('body')[0].innerHTML;
      }), 'w')*/
+
+    console.log("this: " + this);
 
     page.evaluate(function () {
         document.addEventListener("DOMNodeInserted", function () {

@@ -1,4 +1,5 @@
-    window.removed_nodes = [];
+window.removedNodes = [];
+window.addedNodesCount = 0;
 
 window.onbeforeunload = function (event) {
     event.preventDefault();
@@ -7,13 +8,17 @@ window.onbeforeunload = function (event) {
 };
 
 document.addEventListener("DOMNodeRemoved", function (event) {
-    if(event.target.innerText) {
-        window.removed_nodes.push(event.target.innerText);
+    if (event.target.innerText) {
+        window.removedNodes.push(event.target.innerText);
     }
 });
 
+document.addEventListener("DOMNodeInserted", function (event) {
+    window.addedNodesCount++;
+});
+
 window.restoreRemovedNodes = function () {
-    for (var i = 0; i < window.removed_nodes.length; i++) {
-        window.document.body.appendChild(window.removed_nodes[i]);
+    for (var i = 0; i < window.removedNodes.length; i++) {
+        window.document.body.appendChild(window.removedNodes[i]);
     }
 };

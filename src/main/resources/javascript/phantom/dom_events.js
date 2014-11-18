@@ -24,7 +24,6 @@ page.onResourceRequested = function (requestData, networkRequest) {
         }
     }
 
-    console.log("AJAX request: " + requestData.id);
     if (xRequestedWith && xRequestedWith.value == 'XMLHttpRequest') {
         page.evaluate(function (id) {
             window.ajaxRequests.push(id);
@@ -36,7 +35,7 @@ page.onResourceReceived = function (response) {
     page.evaluate(function (id) {
         var indexOfId = window.ajaxRequests.indexOf(id);
         if (indexOfId >= 0) {
-            page.ajaxRequests.splice(indexOfId, 1);
+            window.ajaxRequests.splice(indexOfId, 1);
         }
     }, response.id);
 };

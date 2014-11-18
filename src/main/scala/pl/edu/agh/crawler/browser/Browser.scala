@@ -1,15 +1,14 @@
 package pl.edu.agh.crawler.browser
 
+import java.util
 import java.util.concurrent.TimeUnit
 
-import com.google.common.base.Predicate
-import org.fluentlenium.core.{Fluent, FluentPage}
+import org.fluentlenium.core.FluentPage
 import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.phantomjs.PhantomJSDriver
-import pl.edu.agh.crawler.browser.dtoJsonProtocols._
-import pl.edu.agh.crawler.conditions.AjaxSilenceCondition
-import pl.edu.agh.crawler.config.crawlerConfig
-import spray.json._
+import pl.edu.agh.crawler.conditions.{AjaxSilenceCondition, DomSilenceCondition}
+
+import scala.collection.JavaConversions
 
 class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
   /*def getCandidateElements: PageElementResponse = {
@@ -22,8 +21,8 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
   }
 
   override def goTo(url: String) = {
-    super.goTo(url)
-    await().pollingEvery(1000, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).untilPage().isLoaded
+    driver.navigate().to(url)
+    await().pollingEvery(100, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).untilPage().isLoaded
   }
 
   def prepareCustomScripts = {
@@ -31,18 +30,28 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
     driver.executeScript(scripts.domEvents)
 
     driver.executePhantomJS(scripts.phantom.domEvents)
-    Thread.sleep(200)
   }
 
-  def waitUntilAjaxCompleted = {
+  def waitUntilAjaxCompleted =
     try {
       await().pollingEvery(500, TimeUnit.MILLISECONDS).atMost(5, TimeUnit.SECONDS).until(new AjaxSilenceCondition)
     }
     catch {
       case e: TimeoutException => e.printStackTrace()
     }
-  }
 
-  def getRemovedText =
-    driver.executeScript("return window.removed_nodes;")
+  def waitUntilDomStable =
+    try {
+      await().pollingEvery(500, TimeUnit.MILLISECONDS).atMost(5, TimeUnit.SECONDS).until(new DomSilenceCondition)
+    }
+    catch {
+      case e: TimeoutException => e.printStackTrace()
+    }
+
+  def cleanUp =
+    driver.executeScript("window.onbeforeunload = null;")
+
+  def getRemovedText: Seq[String] =
+    JavaConversions.asScalaBuffer(driver.executeScript("return window.removedNodes;").asInstanceOf[util.List[String]])
+
 }
