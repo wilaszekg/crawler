@@ -1,3 +1,5 @@
+package pl.edu.agh.crawler.run
+
 import java.io.{File, PrintWriter}
 
 import pl.edu.agh.crawler._
@@ -17,17 +19,6 @@ object main {
     "http://pogoda.onet.pl/prognoza-pogody/dzis/europa,polska,krakow,9202.html"
   )
 
-  def dump(i: Int, result: CrawlResult) {
-    println(result.task.url)
-    println("Load time: " + result.statistics.loadTime)
-    println("Crawl time: " + result.statistics.crawlTime)
-    //println(result.removedContent)
-
-    val writer: PrintWriter = new PrintWriter(new File("crawled" + i + ".html"))
-    writer.write(result.pageContent)
-    writer.close()
-  }
-
   def main(args: Array[String]) {
     val crawlerPool: CrawlerPool = new CrawlerPool(4)
     val dispatcher: TasksDispatcher = new TasksDispatcher(crawlerPool, urls map (new CrawlingTask(_)))
@@ -42,6 +33,6 @@ object main {
 
     println("ELAPSED TIME: " + (end - start))
 
-    dispatcher.results.zipWithIndex.foreach { case (result, i) => dump(i, result)}
+    dispatcher.results.zipWithIndex.foreach { case (result, i) => util.dump(i, result)}
   }
 }

@@ -9,6 +9,9 @@ var shouldBeTriggered = function (element) {
     if (href && href.value != '#') {
         return false;
     }
+    if (element.dataset.crawlerVisited == "true") {
+        return false;
+    }
 
     return true;
 };
@@ -18,6 +21,7 @@ var clickedElements = 0;
 while (i < elementsToCrawl.length) {
     var element = elementsToCrawl[i];
     if (shouldBeTriggered(element)) {
+        element.dataset.crawlerVisited = "true";
         click(element);
         clickedElements++;
     }

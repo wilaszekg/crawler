@@ -4,11 +4,11 @@ import java.util
 import java.util.concurrent.TimeUnit
 
 import org.fluentlenium.core.FluentPage
-import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.phantomjs.PhantomJSDriver
-import pl.edu.agh.crawler.conditions.{AjaxSilenceCondition, DomSilenceCondition}
+import org.openqa.selenium.{Point, TimeoutException}
+import pl.edu.agh.crawler.conditions.{HeightExtendCondition, AjaxSilenceCondition, DomSilenceCondition}
 
-import scala.collection.JavaConversions
+import scala.collection.JavaConversions._
 
 class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
   /*def getCandidateElements: PageElementResponse = {
@@ -32,26 +32,38 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
     driver.executePhantomJS(scripts.phantom.domEvents)
   }
 
-  def waitUntilAjaxCompleted =
+  def waitUntilAjaxCompleted(timeout: Int = 5) =
     try {
-      await().pollingEvery(500, TimeUnit.MILLISECONDS).atMost(5, TimeUnit.SECONDS).until(new AjaxSilenceCondition)
+      await().pollingEvery(500, TimeUnit.MILLISECONDS).atMost(timeout, TimeUnit.SECONDS).until(new AjaxSilenceCondition)
     }
     catch {
       case e: TimeoutException => e.printStackTrace()
     }
 
-  def waitUntilDomStable =
+  def waitUntilDomStable(timeout: Int = 5) =
     try {
-      await().pollingEvery(500, TimeUnit.MILLISECONDS).atMost(5, TimeUnit.SECONDS).until(new DomSilenceCondition)
+      await().pollingEvery(500, TimeUnit.MILLISECONDS).atMost(timeout, TimeUnit.SECONDS).until(new DomSilenceCondition)
     }
     catch {
       case e: TimeoutException => e.printStackTrace()
     }
+
+  def waitUntilHeightExtend(initialHeight: Long) =
+    await().pollingEvery(200, TimeUnit.MILLISECONDS).atMost(3, TimeUnit.SECONDS).until(new HeightExtendCondition(this, initialHeight))
 
   def cleanUp =
     driver.executeScript("window.onbeforeunload = null;")
 
   def getRemovedText: Seq[String] =
-    JavaConversions.asScalaBuffer(driver.executeScript("return window.removedNodes;").asInstanceOf[util.List[String]])
+    driver.executeScript("return window.removedNodes;").asInstanceOf[util.List[String]].toList
 
+  def getCurrentHeightAndScrollToBottom = {
+    val height: Long = driver.executeScript("return window.getCurrentHeightAndScrollToBottom();").asInstanceOf[Long]
+    driver.executeScript("return window.getCurrentHeightAndScrollToBottom();")
+    driver.executeScript("return window.getCurrentHeightAndScrollToBottom();")
+    height
+  }
+
+  def documentHeight =
+    driver.executeScript("return document.body.scrollHeight;").asInstanceOf[Long]
 }

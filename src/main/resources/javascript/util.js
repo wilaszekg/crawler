@@ -10,3 +10,12 @@ window.click = function (el) {
     );
     el.dispatchEvent(ev);
 };
+
+/**
+ * @return height of page before scroll
+ */
+window.getCurrentHeightAndScrollToBottom = function () {
+    var height = document.body.scrollHeight;
+    window.scrollTo(0, height);
+    return height;
+};
