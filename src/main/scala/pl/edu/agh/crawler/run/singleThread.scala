@@ -1,7 +1,8 @@
 package pl.edu.agh.crawler.run
 
 import org.openqa.selenium.phantomjs.PhantomJSDriver
-import pl.edu.agh.crawler.{CrawlResult, CrawlingTask, Crawler}
+import pl.edu.agh.crawler.description.{CrawlResult, CrawlingTask}
+import pl.edu.agh.crawler.Crawler
 import pl.edu.agh.crawler.phantom.webDriverFactory
 
 object singleThread {

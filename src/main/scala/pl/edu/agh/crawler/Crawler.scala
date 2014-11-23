@@ -3,6 +3,7 @@ package pl.edu.agh.crawler
 import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.phantomjs.PhantomJSDriver
 import pl.edu.agh.crawler.browser.Browser
+import pl.edu.agh.crawler.description._
 
 class Crawler(val driver: PhantomJSDriver) {
 
@@ -12,48 +13,43 @@ class Crawler(val driver: PhantomJSDriver) {
   private val maxScrolls = 3
 
   def crawl(task: CrawlingTask) = {
-    val start = System.currentTimeMillis()
-    browser.goTo(task.url)
-
-    val loadTime = System.currentTimeMillis() - start
+    val timer = new Timer
+    val loadTask = timer measure browser.goTo(task.url)
 
     browser.prepareCustomScripts
 
-    val beforeScroll = System.currentTimeMillis()
-    scrollCrawl(maxScrolls)
-    val scrollTime = System.currentTimeMillis() - beforeScroll
-    println("Scrolling time: " + scrollTime)
+    val scrollTask = new Timer measure scrollCrawl(maxScrolls)
 
-    browser.executeCrawlingScripts
-
-    browser.waitUntilAjaxCompleted()
-    browser.waitUntilDomStable()
-
-    val crawlTime = System.currentTimeMillis() - start
+    val wholeTask = timer measure executeCrawling
 
     new CrawlResult(task,
       driver.getPageSource,
       browser.getRemovedText,
-      new CrawlingStatistics(loadTime, crawlTime))
+      new CrawlingStatistics(loadTask.time, wholeTask.time, scrollTask.time))
   }
 
-  def cleanBrowser = browser.cleanUp
+  private def executeCrawling = {
+    browser.executeCrawlingScripts
+    browser.waitUntil ajaxCompleted()
+    browser.waitUntil domStable()
+  }
 
   private def scrollCrawl(timesToScroll: Int): Unit = {
     println("Attempting to scroll: " + driver.toString)
-    val height = browser.getCurrentHeightAndScrollToBottom
+    val height = browser.documentHeight
+    browser.scrollToBottom
 
     if (timesToScroll > 1)
       try {
-        browser.waitUntilAjaxCompleted(3)
-        browser.waitUntilHeightExtend(height)
+        browser.waitUntil ajaxCompleted (3)
+        browser.waitUntil heightExtend (height)
         scrollCrawl(timesToScroll - 1)
       }
       catch {
         case e: TimeoutException => println("No infinite scroll: " + driver.toString)
       }
-
   }
 
+  def cleanBrowser = browser.cleanUp
 
 }

@@ -1,5 +1,6 @@
-package pl.edu.agh.crawler
+package pl.edu.agh.crawler.environment
 
+import pl.edu.agh.crawler.Crawler
 import pl.edu.agh.crawler.phantom.webDriverFactory
 
 import scala.collection.immutable.IndexedSeq

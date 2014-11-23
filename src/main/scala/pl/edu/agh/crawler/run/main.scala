@@ -3,6 +3,8 @@ package pl.edu.agh.crawler.run
 import java.io.{File, PrintWriter}
 
 import pl.edu.agh.crawler._
+import pl.edu.agh.crawler.description.CrawlingTask
+import pl.edu.agh.crawler.environment.{TasksDispatcher, CrawlerPool}
 
 
 object main {

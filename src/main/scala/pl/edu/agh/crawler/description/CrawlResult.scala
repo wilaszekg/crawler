@@ -1,4 +1,4 @@
-package pl.edu.agh.crawler
+package pl.edu.agh.crawler.description
 
 class CrawlResult(val task: CrawlingTask,
                   val pageContent: String,

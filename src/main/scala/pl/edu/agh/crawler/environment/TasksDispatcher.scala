@@ -1,4 +1,7 @@
-package pl.edu.agh.crawler
+package pl.edu.agh.crawler.environment
+
+import pl.edu.agh.crawler.description.{CrawlResult, CrawlingTask}
+import pl.edu.agh.crawler.Crawler
 
 import scala.collection.mutable
 import scala.concurrent.ExecutionContext.Implicits.global
