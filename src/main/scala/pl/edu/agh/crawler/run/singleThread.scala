@@ -11,7 +11,9 @@ object singleThread {
     val crawler: Crawler = new Crawler(driver)
 
     //val crawlResult: CrawlResult = crawler.crawl(new CrawlingTask("https://twitter.com/WislaKrakowSA"))
-    val crawlResult: CrawlResult = crawler.crawl(new CrawlingTask("https://pl-pl.facebook.com/WislaKrakow"))
+    //val crawlResult: CrawlResult = crawler.crawl(new CrawlingTask("https://pl-pl.facebook.com/WislaKrakow"))
+    //val crawlResult: CrawlResult = crawler.crawl(new CrawlingTask("https://www.fslab.agh.edu.pl/"))
+    val crawlResult: CrawlResult = crawler.crawl(new CrawlingTask("http://google.pl"))
 
     util.dump(0, crawlResult, "scroll")
   }

@@ -8,7 +8,6 @@ import pl.edu.agh.crawler.description._
 class Crawler(val driver: PhantomJSDriver) {
 
   val browser: Browser = new Browser(driver)
-  var busy = false
 
   private val maxScrolls = 3
 

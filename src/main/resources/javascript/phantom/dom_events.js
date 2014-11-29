@@ -11,9 +11,7 @@ page.onConfirm = function (msg) {
     return false;
 };
 
-page.evaluate(function () {
-    window.ajaxRequests = [];
-});
+page.ajaxRequests = [];
 
 page.onResourceRequested = function (requestData, networkRequest) {
     var xRequestedWith = undefined;
@@ -25,17 +23,13 @@ page.onResourceRequested = function (requestData, networkRequest) {
     }
 
     if (xRequestedWith && xRequestedWith.value == 'XMLHttpRequest') {
-        page.evaluate(function (id) {
-            window.ajaxRequests.push(id);
-        }, requestData.id);
+        page.ajaxRequests.push(requestData.id);
     }
 };
 
 page.onResourceReceived = function (response) {
-    page.evaluate(function (id) {
-        var indexOfId = window.ajaxRequests.indexOf(id);
-        if (indexOfId >= 0) {
-            window.ajaxRequests.splice(indexOfId, 1);
-        }
-    }, response.id);
+    var indexOfId = page.ajaxRequests.indexOf(response.id);
+    if (indexOfId >= 0) {
+        page.ajaxRequests.splice(indexOfId, 1);
+    }
 };

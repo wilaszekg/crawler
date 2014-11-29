@@ -1,40 +1,74 @@
 package pl.edu.agh.crawler.run
 
-import java.io.{File, PrintWriter}
+import pl.edu.agh.crawler.api.{MultiCrawler, CrawlerPool}
+import pl.edu.agh.crawler.description.{CrawlResult, CrawlingTask}
 
-import pl.edu.agh.crawler._
-import pl.edu.agh.crawler.description.CrawlingTask
-import pl.edu.agh.crawler.environment.{TasksDispatcher, CrawlerPool}
+import scala.collection.mutable
+import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Promise
 
 
 object main {
 
+  val results = new mutable.Queue[CrawlResult]
+
+  val monitor = new Object
+
   val urls = List("https://pl-pl.facebook.com/WislaKrakow",
     "https://www.facebook.com/uefachampionsleague",
     "https://www.facebook.com/ChelseaFC",
-    "http://scala-lang.org/",
+    "https://twitter.com/barackobama",
     "https://twitter.com/WislaKrakowSA",
-    "http://www.iet.agh.edu.pl/pl/studenci/aktualnosci/",
-    "http://www.iet.agh.edu.pl/pl/o-wydziale/wladze/",
-    "http://www.kia.com/pl/",
-    "http://www.ryanair.com/",
-    "http://pogoda.onet.pl/prognoza-pogody/dzis/europa,polska,krakow,9202.html"
+    "https://twitter.com/dalailama",
+    "https://twitter.com/pontifex",
+    "https://es-es.facebook.com/RealMadrid",
+    "https://twitter.com/realmadrid",
+    "https://www.facebook.com/VisitFlorence"/*,
+    "https://pl-pl.facebook.com/WislaKrakow",
+    "https://www.facebook.com/uefachampionsleague",
+    "https://www.facebook.com/ChelseaFC",
+    "https://twitter.com/barackobama",
+    "https://twitter.com/WislaKrakowSA",
+    "https://twitter.com/dalailama",
+    "https://twitter.com/pontifex",
+    "https://es-es.facebook.com/RealMadrid",
+    "https://twitter.com/realmadrid",
+    "https://www.facebook.com/VisitFlorence"*/
   )
+
+  private def handleResult(result: Promise[CrawlResult]) = results.synchronized {
+    result.future onSuccess {
+      case r => results += r
+        println(r)
+        monitor.synchronized {
+          if (results.size == urls.size)
+            monitor.notifyAll()
+        }
+    }
+    result.future onFailure {
+      case e => results += new CrawlResult(null, null, null, null)
+        println("Promise failure")
+    }
+  }
 
   def main(args: Array[String]) {
     val crawlerPool: CrawlerPool = new CrawlerPool(4)
-    val dispatcher: TasksDispatcher = new TasksDispatcher(crawlerPool, urls map (new CrawlingTask(_)))
+
+    val multiCrawler = new MultiCrawler(crawlerPool)
 
     val start: Long = System.currentTimeMillis()
-    dispatcher.execute
 
-    dispatcher.monitor.synchronized {
-      dispatcher.monitor.wait()
+    urls foreach (url => handleResult(multiCrawler.crawl(new CrawlingTask(url))))
+
+    monitor.synchronized {
+      monitor.wait()
     }
+
+
     val end: Long = System.currentTimeMillis()
 
     println("ELAPSED TIME: " + (end - start))
 
-    dispatcher.results.zipWithIndex.foreach { case (result, i) => util.dump(i, result)}
+    results.zipWithIndex.foreach { case (result, i) => util.dump(i, result)}
   }
 }
