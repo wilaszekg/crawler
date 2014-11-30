@@ -5,6 +5,7 @@ import java.util.concurrent.TimeUnit
 
 import org.fluentlenium.core.FluentPage
 import org.openqa.selenium.phantomjs.PhantomJSDriver
+import pl.edu.agh.crawler.config.crawlerConfig
 
 import scala.collection.JavaConversions._
 
@@ -12,7 +13,7 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
 
   override def goTo(url: String) = {
     driver.navigate().to(url)
-    await().pollingEvery(100, TimeUnit.MILLISECONDS).atMost(10, TimeUnit.SECONDS).untilPage().isLoaded
+    await().pollingEvery(100, TimeUnit.MILLISECONDS).atMost(crawlerConfig.pageLoadTimeout, TimeUnit.SECONDS).untilPage().isLoaded
   }
 
   def executeCrawlingScripts = {

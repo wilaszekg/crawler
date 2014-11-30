@@ -3,6 +3,7 @@ package pl.edu.agh.crawler
 import org.openqa.selenium.TimeoutException
 import org.openqa.selenium.phantomjs.PhantomJSDriver
 import pl.edu.agh.crawler.browser.Browser
+import pl.edu.agh.crawler.config.crawlerConfig
 import pl.edu.agh.crawler.description._
 
 class Crawler(val driver: PhantomJSDriver) {
@@ -40,7 +41,7 @@ class Crawler(val driver: PhantomJSDriver) {
 
     if (timesToScroll > 1)
       try {
-        browser.waitUntil ajaxCompleted (3)
+        browser.waitUntil ajaxCompleted (crawlerConfig.scrollEffectAjaxTimeout)
         browser.waitUntil heightExtend (height)
         scrollCrawl(timesToScroll - 1)
       }
