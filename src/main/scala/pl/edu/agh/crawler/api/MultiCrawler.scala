@@ -1,7 +1,7 @@
 package pl.edu.agh.crawler.api
 
-import pl.edu.agh.crawler.Crawler
 import pl.edu.agh.crawler.description.{CrawlResult, CrawlingTask}
+import pl.edu.agh.crawler.workers.Crawler
 import scala.concurrent.ExecutionContext.Implicits.global
 
 import scala.concurrent.{Promise, future, promise}

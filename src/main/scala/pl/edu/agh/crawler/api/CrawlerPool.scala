@@ -1,9 +1,8 @@
 package pl.edu.agh.crawler.api
 
 import java.util.concurrent.LinkedBlockingQueue
-
-import pl.edu.agh.crawler.Crawler
 import pl.edu.agh.crawler.phantom.webDriverFactory
+import pl.edu.agh.crawler.workers.Crawler
 
 class CrawlerPool(val size: Int) {
   val crawlers: Seq[Crawler] =
