@@ -65,4 +65,5 @@ Then just invoke `crawl` method to crawl `url` with `scrollAttempts`:
 multiCrawler.crawl(new CrawlingTask(url, scrollAttempts))
 ```
 
-This call is blocking and returns as soon as there is free crawler to handle your request. This function returs a promise of crawling result: `Promise[CrawlResult]`
+This call is blocking and returns as soon as there is free crawler to handle your request. This function returs a promise of crawling result: `Promise[CrawlResult]`.
+To quit all drivers of the `crawlerPool`, use `quitAll` method.
