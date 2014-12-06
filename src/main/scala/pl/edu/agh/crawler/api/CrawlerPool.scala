@@ -11,6 +11,8 @@ class CrawlerPool(val size: Int) {
   val freeCrawlers = new LinkedBlockingQueue[Crawler]
   crawlers foreach (freeCrawlers.put(_))
 
+  def quitAll = crawlers.foreach(_.driver.quit())
+
   def takeCrawler =
     freeCrawlers.take()
 
