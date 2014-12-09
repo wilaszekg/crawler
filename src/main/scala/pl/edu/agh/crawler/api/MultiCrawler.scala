@@ -22,7 +22,6 @@ class MultiCrawler(val crawlerPool: CrawlerPool) {
     catch {
       case e: Exception => resultPromise failure e
     }
-    crawler.cleanBrowser
     crawlerPool releaseCrawler crawler
   }
 }

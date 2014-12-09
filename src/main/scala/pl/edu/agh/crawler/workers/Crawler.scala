@@ -12,13 +12,19 @@ class Crawler(val driver: PhantomJSDriver) {
   def crawl(task: CrawlingTask) = {
     val timer = new Timer
 
-    val loadTask: TimeTask[Fluent] = openPage(task, timer)
+    val loadTask = openPage(task, timer)
     val scrollTask = new ScrollCrawler(browser, task.scrollAttempts) execute
     val wholeTask = timer measure executeCrawling
 
-    new CrawlResult(task,
-      new CrawledContent(driver.getPageSource, browser.getRemovedText),
-      new CrawlingStatistics(loadTask.time, wholeTask.time, scrollTask.time, scrollTask.result))
+    finalizeAndGetResult(task, new CrawlingStatistics(loadTask.time, wholeTask.time, scrollTask.time, scrollTask.result))
+  }
+
+  private def finalizeAndGetResult(task: CrawlingTask, crawlingStatistics: CrawlingStatistics): CrawlResult = {
+    val result: CrawlResult =
+      new CrawlResult(task, new CrawledContent(driver.getPageSource, browser.getRemovedText), crawlingStatistics)
+
+    browser.cleanUp
+    result
   }
 
   private def openPage(task: CrawlingTask, timer: Timer): TimeTask[Fluent] = {
@@ -32,7 +38,5 @@ class Crawler(val driver: PhantomJSDriver) {
     browser.waitUntil ajaxCompleted()
     browser.waitUntil domStable()
   }
-
-  def cleanBrowser = browser.cleanUp
 
 }

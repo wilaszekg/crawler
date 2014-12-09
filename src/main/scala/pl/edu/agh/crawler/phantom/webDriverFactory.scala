@@ -10,9 +10,7 @@ object webDriverFactory {
     capabilities.setCapability("phantomjs.binary.path", crawlerConfig.phantomjsPath)
     capabilities.setCapability("phantomjs.page.settings.loadImages", "false")
     capabilities.setCapability("phantomjs.cli.args", Array("--proxy-type=none"))
-    val driver: PhantomJSDriver = new PhantomJSDriver(capabilities)
 
-    driver.navigate().to("http://google.pl")
-    driver
+    new PhantomJSDriver(capabilities)
   }
 }
