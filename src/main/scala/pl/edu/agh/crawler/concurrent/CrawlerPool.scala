@@ -1,6 +1,7 @@
-package pl.edu.agh.crawler.api
+package pl.edu.agh.crawler.concurrent
 
 import java.util.concurrent.LinkedBlockingQueue
+
 import pl.edu.agh.crawler.phantom.webDriverFactory
 import pl.edu.agh.crawler.workers.Crawler
 

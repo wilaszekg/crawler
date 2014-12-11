@@ -1,9 +1,9 @@
-package pl.edu.agh.crawler.api
+package pl.edu.agh.crawler.concurrent
 
 import pl.edu.agh.crawler.description.{CrawlResult, CrawlingTask}
 import pl.edu.agh.crawler.workers.Crawler
-import scala.concurrent.ExecutionContext.Implicits.global
 
+import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.{Promise, future, promise}
 
 class MultiCrawler(val crawlerPool: CrawlerPool) {
