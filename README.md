@@ -54,7 +54,7 @@ object singleThread {
 ```
 
 ## Multi thread mode
-In this mode, you run a few crawlers - each on one instance of phantomJS browser. To create a multi thread crawler with 4 crawling executors, you need to create a `pl.edu.agh.crawler.api.CrawlerPool` with `size` argument equal 4 and then create a new `pl.edu.agh.crawler.api.MultiCrawler` using this pool:
+In this mode, you run a few crawlers - each on one instance of phantomJS browser. To create a multi thread crawler with 4 crawling executors, you need to create a `pl.edu.agh.crawler.concurrent.CrawlerPool` with `size` argument equal 4 and then create a new `pl.edu.agh.crawler.concurrent.MultiCrawler` using this pool:
 ```
 val crawlerPool: CrawlerPool = new CrawlerPool(4)
 val multiCrawler = new MultiCrawler(crawlerPool)
