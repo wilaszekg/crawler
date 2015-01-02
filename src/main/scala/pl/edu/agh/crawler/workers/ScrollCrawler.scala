@@ -6,9 +6,10 @@ import pl.edu.agh.crawler.config.crawlerConfig
 import pl.edu.agh.crawler.description.{ScrollAttempt, Timer}
 
 
-class ScrollCrawler(val browser: Browser, val attempts: Int) {
+class ScrollCrawler(val browser: Browser) {
 
-  def execute = new Timer measure scrollAndCountSuccessfulAttempts(attempts, 0)
+  def execute(attempts: Int) =
+    new Timer measure scrollAndCountSuccessfulAttempts(attempts, 0)
 
   private def scrollAndCountSuccessfulAttempts(attemptsLeft: Int, successfulAttempts: Int): ScrollAttempt =
     if (attemptsLeft > 0) tryScroll(attemptsLeft, successfulAttempts)

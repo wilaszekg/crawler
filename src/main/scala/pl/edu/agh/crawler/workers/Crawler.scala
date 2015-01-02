@@ -9,11 +9,13 @@ class Crawler(val driver: PhantomJSDriver) {
 
   val browser: Browser = new Browser(driver)
 
+  val scrollCrawler: ScrollCrawler = new ScrollCrawler(browser)
+
   def crawl(task: CrawlingTask) = {
     val timer = new Timer
 
     val loadTask = openPage(task, timer)
-    val scrollTask = new ScrollCrawler(browser, task.scrollAttempts) execute
+    val scrollTask = scrollCrawler execute task.scrollAttempts
     val wholeTask = timer measure breadthFirstCrawling(task.depth)
 
     finalizeAndGetResult(task, new CrawlingStatistics(loadTask.time, wholeTask.time, scrollTask.time, scrollTask.result))
