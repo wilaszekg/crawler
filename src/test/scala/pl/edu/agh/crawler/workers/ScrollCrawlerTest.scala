@@ -1,7 +1,7 @@
 package pl.edu.agh.crawler.workers
 
 import org.mockito.Matchers.anyLong
-import org.mockito.Mockito.{doReturn, mock, when}
+import org.mockito.Mockito._
 import org.openqa.selenium.TimeoutException
 import org.scalatest.{FlatSpec, Matchers}
 import pl.edu.agh.crawler.browser.{Browser, BrowserWait}
@@ -16,6 +16,7 @@ class ScrollCrawlerTest extends FlatSpec with Matchers {
 
     val task: TimeTask[ScrollAttempt] = new ScrollCrawler(browser, 0).execute
 
+    verify(browser, times(0)).scrollToBottom
     task.result.successfulTimes shouldBe 0
   }
 
@@ -27,6 +28,7 @@ class ScrollCrawlerTest extends FlatSpec with Matchers {
 
     val task: TimeTask[ScrollAttempt] = new ScrollCrawler(browser, 3).execute
 
+    verify(browser, times(1)).scrollToBottom
     task.result.successfulTimes shouldBe 0
   }
 
@@ -38,6 +40,7 @@ class ScrollCrawlerTest extends FlatSpec with Matchers {
 
     val task: TimeTask[ScrollAttempt] = new ScrollCrawler(browser, 3).execute
 
+    verify(browser, times(2)).scrollToBottom
     task.result.successfulTimes shouldBe 1
   }
 
@@ -49,6 +52,7 @@ class ScrollCrawlerTest extends FlatSpec with Matchers {
 
     val task: TimeTask[ScrollAttempt] = new ScrollCrawler(browser, 3).execute
 
+    verify(browser, times(3)).scrollToBottom
     task.result.successfulTimes shouldBe 3
   }
 }
