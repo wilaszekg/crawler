@@ -3,7 +3,7 @@ package pl.edu.agh.crawler.conditions
 import com.google.common.base.Predicate
 import org.fluentlenium.core.Fluent
 
-  abstract class RepeatableCondition(val interval: Int, val times: Int) extends Predicate[Fluent] {
+abstract class RepeatableCondition(val interval: Int, val times: Int) extends Predicate[Fluent] {
 
   override def apply(fluent: Fluent): Boolean = keepsTrue(fluent)
 
