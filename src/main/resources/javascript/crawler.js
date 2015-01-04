@@ -1,29 +1,16 @@
-var elementsToCrawl = document.querySelectorAll("a");
+var i;
+var bodyChildren = document.body.children;
 
+for (i = 0; i < bodyChildren.length; i++) {
+    bodyChildren[i].style.position = 'relative';
+}
 
-var shouldBeTriggered = function (element) {
-    if (element.target == '_blank') {
-        return false;
-    }
-    var href = element.attributes['href'];
-    if (href && href.value != '#') {
-        return false;
-    }
-    if (element.dataset.crawlerVisited == "true") {
-        return false;
-    }
+var elementsToCrawl = window.getAutonomousElements(document.body);
 
-    return true;
-};
-
-var i = 0;
-var clickedElements = 0;
-while (i < elementsToCrawl.length) {
+for (i = 0; i < elementsToCrawl.length; i++) {
     var element = elementsToCrawl[i];
-    if (shouldBeTriggered(element)) {
+    if (element.dataset.crawlerVisited != "true") {
         element.dataset.crawlerVisited = "true";
         click(element);
-        clickedElements++;
     }
-    i++;
 }

@@ -27,11 +27,6 @@ window.getElementCenter = function (element) {
     }
 };
 
-window.elementSpace = function (element) {
-    var position = element.getBoundingClientRect();
-    return (position.right - position.left) * (position.bottom - position.top);
-};
-
 window.realDocumentHeight = function () {
     var body = document.body;
     return Math.max(body.scrollHeight, body.offsetHeight);

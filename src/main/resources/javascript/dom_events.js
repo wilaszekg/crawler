@@ -16,9 +16,3 @@ document.addEventListener("DOMNodeRemoved", function (event) {
 document.addEventListener("DOMNodeInserted", function (event) {
     window.addedNodesCount++;
 });
-
-window.restoreRemovedNodes = function () {
-    for (var i = 0; i < window.removedNodes.length; i++) {
-        window.document.body.appendChild(window.removedNodes[i]);
-    }
-};
