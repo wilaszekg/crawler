@@ -44,8 +44,8 @@ object singleThread {
     val driver: PhantomJSDriver = webDriverFactory createWebDriver
     val crawler: Crawler = new Crawler(driver)
 
-    // crawling "https://github.com/wilaszekg/crawler" with 3 attempts to scroll down the page
-    val crawlResult: CrawlResult = crawler.crawl(new CrawlingTask("https://github.com/wilaszekg/crawler", 3))
+    // crawling "https://github.com/wilaszekg/crawler" with depth 2 and 3 attempts to scroll down the page
+    val crawlResult: CrawlResult = crawler.crawl(new CrawlingTask("https://github.com/wilaszekg/crawler", 2, 3))
 
     driver.quit()
   }
@@ -60,9 +60,9 @@ val crawlerPool: CrawlerPool = new CrawlerPool(4)
 val multiCrawler = new MultiCrawler(crawlerPool)
 ```
 
-Then just invoke `crawl` method to crawl `url` with `scrollAttempts`:
+Then just invoke `crawl` method to crawl `url` with `depth` and `scrollAttempts`:
 ```
-multiCrawler.crawl(new CrawlingTask(url, scrollAttempts))
+multiCrawler.crawl(new CrawlingTask(url, depth, scrollAttempts))
 ```
 
 This call is blocking and returns as soon as there is free crawler to handle your request. This function returs a promise of crawling result: `Promise[CrawlResult]`.
