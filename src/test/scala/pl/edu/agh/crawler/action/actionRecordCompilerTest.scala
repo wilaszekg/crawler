@@ -16,7 +16,7 @@ class actionRecordCompilerTest extends FlatSpec {
     val webElement = mock(classOf[WebElement])
     when(webDriver.findElement(Matchers.any(classOf[By]))).thenReturn(webElement)
 
-    val actionSupplier: WebDriver => RecordedAction = actionRecordCompiler.compile(behaviourSource)
+    val actionSupplier: ActionSupplier = actionRecordCompiler.compile(behaviourSource)
     actionSupplier(webDriver).perform()
     Mockito.verify(webDriver).get("https://www.google.pl//#q=scala")
   }

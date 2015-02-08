@@ -1,16 +1,15 @@
 package pl.edu.agh.crawler.action
 
 import net.openhft.compiler.CachedCompiler
-import org.openqa.selenium.WebDriver
 
 object actionRecordCompiler {
 
-  def compile(source: String): WebDriver => RecordedAction = {
+  def compile(source: String): ActionSupplier = {
     val modifiedSource: String = adoptToRecordedAction(source)
     val compiler: CachedCompiler = new CachedCompiler(null, null)
     val actionClass = compiler.loadFromJava("Behaviour", modifiedSource).asInstanceOf[Class[RecordedAction]]
 
-    driver => actionClass.newInstance().withDriver(driver)
+    new ActionSupplier(actionClass)
   }
 
   private def adoptToRecordedAction(source: String): String = {
