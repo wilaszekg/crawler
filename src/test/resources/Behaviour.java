@@ -17,7 +17,7 @@ public class Behaviour {
   public void setUp() throws Exception {
     driver = new NotExistingDriver();
     baseUrl = "https://www.google.pl/";
-    //driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
+    driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
   }
 
   @Test

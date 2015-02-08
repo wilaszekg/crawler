@@ -7,7 +7,7 @@ import java.util
 import japa.parser.JavaParser
 import japa.parser.ast.`type`.ClassOrInterfaceType
 import japa.parser.ast.body.{BodyDeclaration, ClassOrInterfaceDeclaration, FieldDeclaration, MethodDeclaration}
-import japa.parser.ast.expr.{AssignExpr, NameExpr}
+import japa.parser.ast.expr.{AssignExpr, MethodCallExpr, NameExpr}
 import japa.parser.ast.stmt.{ExpressionStmt, Statement}
 import japa.parser.ast.{CompilationUnit, ImportDeclaration}
 
@@ -40,7 +40,8 @@ class ClassCompilationUnit(val source: String) {
   def removeUsagesOf(fieldName: String, targetMethod: String) = {
     val method: MethodDeclaration = getMethod(targetMethod)
     val statements: util.List[Statement] = method.getBody.getStmts
-    val fieldUsages = statements.filter(statement => isFieldAssign(fieldName, statement))
+    val fieldUsages = statements.filter(
+      statement => isFieldAssign(fieldName, statement) || usesToCallFunction(fieldName, statement))
     statements.removeAll(fieldUsages)
   }
 
@@ -49,6 +50,29 @@ class ClassCompilationUnit(val source: String) {
       statement.asInstanceOf[ExpressionStmt]
         .getExpression.asInstanceOf[AssignExpr]
         .getTarget.asInstanceOf[NameExpr].getName.equals(fieldName)
+    } catch {
+      case e: Throwable => false
+    }
+  }
+
+  private def usesToCallFunction(fieldName: String, statement: Statement): Boolean = {
+    def isCallee(methodCall: MethodCallExpr): Boolean =
+      methodCall.getScope.isInstanceOf[NameExpr] &&
+        methodCall.getScope.asInstanceOf[NameExpr].getName.equals(fieldName)
+
+    def isArgument(methodCall: MethodCallExpr): Boolean =
+      methodCall.getArgs != null &&
+        methodCall.getArgs.exists(argument => argument.isInstanceOf[NameExpr]
+          && argument.asInstanceOf[NameExpr].getName.equals(fieldName))
+
+    def isCalleeOrArgument(methodCall: MethodCallExpr): Boolean =
+      isCallee(methodCall) ||
+        isArgument(methodCall) ||
+        (methodCall.getScope.isInstanceOf[MethodCallExpr]
+          && isCalleeOrArgument(methodCall.getScope.asInstanceOf[MethodCallExpr]))
+
+    try {
+      isCalleeOrArgument(statement.asInstanceOf[ExpressionStmt].getExpression.asInstanceOf[MethodCallExpr])
     } catch {
       case e: Throwable => false
     }
