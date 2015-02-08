@@ -2,11 +2,13 @@ package pl.edu.agh.crawler.action
 
 import java.io.ByteArrayInputStream
 import java.nio.charset.StandardCharsets
+import java.util
 
 import japa.parser.JavaParser
 import japa.parser.ast.`type`.ClassOrInterfaceType
 import japa.parser.ast.body.{BodyDeclaration, ClassOrInterfaceDeclaration, FieldDeclaration, MethodDeclaration}
-import japa.parser.ast.expr.NameExpr
+import japa.parser.ast.expr.{AssignExpr, NameExpr}
+import japa.parser.ast.stmt.{ExpressionStmt, Statement}
 import japa.parser.ast.{CompilationUnit, ImportDeclaration}
 
 import scala.collection.JavaConversions._
@@ -35,6 +37,23 @@ class ClassCompilationUnit(val source: String) {
     testMethod.setName(newName)
   }
 
+  def removeUsagesOf(fieldName: String, targetMethod: String) = {
+    val method: MethodDeclaration = getMethod(targetMethod)
+    val statements: util.List[Statement] = method.getBody.getStmts
+    val fieldUsages = statements.filter(statement => isFieldAssign(fieldName, statement))
+    statements.removeAll(fieldUsages)
+  }
+
+  private def isFieldAssign(fieldName: String, statement: Statement): Boolean = {
+    try {
+      statement.asInstanceOf[ExpressionStmt]
+        .getExpression.asInstanceOf[AssignExpr]
+        .getTarget.asInstanceOf[NameExpr].getName.equals(fieldName)
+    } catch {
+      case e: Throwable => false
+    }
+  }
+
   override def toString = compilationUnit.toString
 
   private def buildCompilationUnit(source: String): CompilationUnit = {
@@ -57,4 +76,10 @@ class ClassCompilationUnit(val source: String) {
       member.getAnnotations.exists(annotation => annotation.getName.getName.equals(annotationName))
   }
 
+  private def getMethod(name: String): MethodDeclaration = {
+    classDeclaration.getMembers.find(
+      member => member.isInstanceOf[MethodDeclaration]
+        && member.asInstanceOf[MethodDeclaration].getName.equals(name))
+      .get.asInstanceOf[MethodDeclaration]
+  }
 }

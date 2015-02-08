@@ -19,6 +19,7 @@ object actionRecordCompiler {
     actionCompilationUnit.setExtends("RecordedAction")
     actionCompilationUnit.removeField("driver")
     actionCompilationUnit.renameMethodAnnotatedAs("runAction", "Test")
+    actionCompilationUnit.removeUsagesOf("driver", "setUp")
 
     actionCompilationUnit.toString
   }
