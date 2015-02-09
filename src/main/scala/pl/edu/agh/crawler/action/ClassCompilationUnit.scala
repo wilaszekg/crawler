@@ -14,6 +14,7 @@ import japa.parser.ast.{CompilationUnit, ImportDeclaration}
 import scala.collection.JavaConversions._
 
 class ClassCompilationUnit(val source: String) {
+
   val compilationUnit = buildCompilationUnit(source)
   val classDeclaration = getClassDeclaration(compilationUnit)
 
@@ -43,6 +44,10 @@ class ClassCompilationUnit(val source: String) {
     val fieldUsages = statements.filter(
       statement => isFieldAssign(fieldName, statement) || usesToCallFunction(fieldName, statement))
     statements.removeAll(fieldUsages)
+  }
+
+  def setClassName(className: String) = {
+    classDeclaration.setName(className)
   }
 
   private def isFieldAssign(fieldName: String, statement: Statement): Boolean = {
