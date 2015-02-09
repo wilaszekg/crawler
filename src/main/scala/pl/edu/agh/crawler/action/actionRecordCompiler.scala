@@ -13,13 +13,13 @@ object actionRecordCompiler {
   }
 
   private def adoptToRecordedAction(source: String): String = {
-    val actionCompilationUnit = new ClassCompilationUnit(source)
-    actionCompilationUnit.addClassImport("pl.edu.agh.crawler.action.RecordedAction")
-    actionCompilationUnit.setExtends("RecordedAction")
-    actionCompilationUnit.removeField("driver")
-    actionCompilationUnit.renameMethodAnnotatedAs("runAction", "Test")
-    actionCompilationUnit.removeUsagesOf("driver", "setUp")
+    val classCompilationUnit = new ClassCompilationUnit(source)
+    classCompilationUnit.addClassImport("pl.edu.agh.crawler.action.RecordedAction")
+    classCompilationUnit.setExtends("RecordedAction")
+    classCompilationUnit.removeField("driver")
+    classCompilationUnit.renameMethodAnnotatedAs("runAction", "Test")
+    classCompilationUnit.removeUsagesOf("driver", "setUp")
 
-    actionCompilationUnit.toString
+    classCompilationUnit.toString
   }
 }
