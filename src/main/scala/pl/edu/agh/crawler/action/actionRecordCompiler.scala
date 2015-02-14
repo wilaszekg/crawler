@@ -21,6 +21,7 @@ object actionRecordCompiler {
 
   private def adoptToRecordedAction(source: String, actionClassName: String): String = {
     val classCompilationUnit = new ClassCompilationUnit(source)
+    classCompilationUnit.removePackage()
     classCompilationUnit.addClassImport("pl.edu.agh.crawler.action.RecordedAction")
     classCompilationUnit.setExtends("RecordedAction")
     classCompilationUnit.removeField("driver")

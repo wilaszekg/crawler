@@ -18,6 +18,8 @@ class ClassCompilationUnit(val source: String) {
   val compilationUnit = buildCompilationUnit(source)
   val classDeclaration = getClassDeclaration(compilationUnit)
 
+  def removePackage() = compilationUnit.setPackage(null)
+
   def addClassImport(fullClassName: String) = {
     val classNameExpression: NameExpr = new NameExpr(fullClassName)
     compilationUnit.getImports.add(new ImportDeclaration(classNameExpression, false, false))
