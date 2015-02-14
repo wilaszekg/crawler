@@ -14,11 +14,18 @@ class Crawler(val driver: PhantomJSDriver) {
   def crawl(task: CrawlingTask) = {
     val timer = new Timer
 
+    authenticateIfRequired(task)
     val loadTask = openPage(task, timer)
     val scrollTask = scrollCrawler execute task.scrollAttempts
     val wholeTask = timer measure breadthFirstCrawling(task.depth)
 
     finalizeAndGetResult(task, new CrawlingStatistics(loadTask.time, wholeTask.time, scrollTask.time, scrollTask.result))
+  }
+
+  private def authenticateIfRequired(task: CrawlingTask) = {
+    if (task.authActionSupplier != null) {
+      task.authActionSupplier(driver).perform()
+    }
   }
 
   private def finalizeAndGetResult(task: CrawlingTask, crawlingStatistics: CrawlingStatistics): CrawlResult = {

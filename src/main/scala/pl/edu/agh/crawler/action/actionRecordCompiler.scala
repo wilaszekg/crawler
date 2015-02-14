@@ -15,7 +15,7 @@ object actionRecordCompiler {
     new ActionSupplier(actionClass)
   }
 
-  private def generateNextActionName = {
+  private def generateNextActionName = synchronized {
     "AghCrawlerRecordedAction" + nameIterator.next()
   }
 
