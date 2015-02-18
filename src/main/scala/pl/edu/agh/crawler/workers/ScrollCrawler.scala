@@ -3,7 +3,7 @@ package pl.edu.agh.crawler.workers
 import org.openqa.selenium.TimeoutException
 import pl.edu.agh.crawler.browser.Browser
 import pl.edu.agh.crawler.config.crawlerConfig
-import pl.edu.agh.crawler.description.{ScrollAttempt, Timer}
+import pl.edu.agh.crawler.result.{ScrollAttempt, Timer}
 
 
 class ScrollCrawler(val browser: Browser) {

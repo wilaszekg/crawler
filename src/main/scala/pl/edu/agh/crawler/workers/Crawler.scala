@@ -2,8 +2,10 @@ package pl.edu.agh.crawler.workers
 
 import org.fluentlenium.core.Fluent
 import org.openqa.selenium.phantomjs.PhantomJSDriver
+import pl.edu.agh.crawler.action.ActionSupplier
 import pl.edu.agh.crawler.browser.Browser
-import pl.edu.agh.crawler.description._
+import pl.edu.agh.crawler.result._
+import pl.edu.agh.crawler.task.{ComposedTask, CrawlTask, SingleTask}
 
 class Crawler(val driver: PhantomJSDriver) {
 
@@ -11,10 +13,32 @@ class Crawler(val driver: PhantomJSDriver) {
 
   val scrollCrawler: ScrollCrawler = new ScrollCrawler(browser)
 
-  def crawl(task: CrawlingTask) = {
+  def crawl(task: CrawlTask): CrawlResult = {
+    task match {
+      case ComposedTask(tasks, authAction) => crawlComposed(tasks, authAction)
+      case task: SingleTask => crawlSingle(task)
+    }
+  }
+
+  def crawlComposed(tasks: List[SingleTask], authAction: ActionSupplier): CollectedResult = {
+    authAction(driver).perform()
+    val crawledTasks = tasks.map(crawlSingle(_))
+    browser.deleteAllCookies
+    CollectedResult(crawledTasks)
+  }
+
+  private def crawlSingle(task: SingleTask) = {
+    try {
+      tryCrawl(task)
+    }
+    catch {
+      case cause: Throwable => CrawlFail(task, cause)
+    }
+  }
+
+  def tryCrawl(task: SingleTask): SingleResult = {
     val timer = new Timer
 
-    authenticateIfRequired(task)
     val loadTask = openPage(task, timer)
     val scrollTask = scrollCrawler execute task.scrollAttempts
     val wholeTask = timer measure breadthFirstCrawling(task.depth)
@@ -22,21 +46,15 @@ class Crawler(val driver: PhantomJSDriver) {
     finalizeAndGetResult(task, new CrawlingStatistics(loadTask.time, wholeTask.time, scrollTask.time, scrollTask.result))
   }
 
-  private def authenticateIfRequired(task: CrawlingTask) = {
-    if (task.authActionSupplier != null) {
-      task.authActionSupplier(driver).perform()
-    }
-  }
-
-  private def finalizeAndGetResult(task: CrawlingTask, crawlingStatistics: CrawlingStatistics): CrawlResult = {
-    val result: CrawlResult =
-      new CrawlResult(task, new CrawledContent(driver.getPageSource, browser.getRemovedText), crawlingStatistics)
+  private def finalizeAndGetResult(task: SingleTask, crawlingStatistics: CrawlingStatistics): SingleResult = {
+    val result: SingleResult =
+      SingleResult(task, new CrawledContent(driver.getPageSource, browser.getRemovedText), crawlingStatistics)
 
     browser.cleanUp
     result
   }
 
-  private def openPage(task: CrawlingTask, timer: Timer): TimeTask[Fluent] = {
+  private def openPage(task: SingleTask, timer: Timer): TimeTask[Fluent] = {
     val loadTask = timer measure browser.goTo(task.url)
     browser.prepareCustomScripts
     loadTask

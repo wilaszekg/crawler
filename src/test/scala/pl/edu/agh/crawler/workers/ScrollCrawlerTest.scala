@@ -5,7 +5,7 @@ import org.mockito.Mockito._
 import org.openqa.selenium.TimeoutException
 import org.scalatest.{FlatSpec, Matchers}
 import pl.edu.agh.crawler.browser.{Browser, BrowserWait}
-import pl.edu.agh.crawler.description.{ScrollAttempt, TimeTask}
+import pl.edu.agh.crawler.result.{ScrollAttempt, TimeTask}
 
 class ScrollCrawlerTest extends FlatSpec with Matchers {
 

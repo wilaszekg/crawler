@@ -1,4 +1,4 @@
-package pl.edu.agh.crawler.description
+package pl.edu.agh.crawler.result
 
 class Timer {
   val start = System.currentTimeMillis()

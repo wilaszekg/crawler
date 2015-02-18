@@ -39,10 +39,13 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
     driver.executeScript("return window.removedNodes;").asInstanceOf[util.List[String]].toList
 
   def scrollToBottom = {
-    for(i <- 0 until 3)
+    for (i <- 0 until 3)
       driver.executeScript("return window.scrollToBottom();")
   }
 
   def documentHeight =
     driver.executeScript("return document.body.scrollHeight;").asInstanceOf[Long]
+
+  def deleteAllCookies =
+    driver.manage.deleteAllCookies
 }

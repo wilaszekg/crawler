@@ -1,4 +1,4 @@
-package pl.edu.agh.crawler.description
+package pl.edu.agh.crawler.result
 
 class TimeTask[T](val time: Long, val result: T) {
 }
