@@ -22,15 +22,13 @@ class Crawler(val driver: PhantomJSDriver) {
 
   def crawlComposed(tasks: List[SingleTask], authAction: ActionSupplier): CollectedResult = {
     authAction(driver).perform()
-    val crawledTasks = tasks.map(crawlSingle(_))
+    val crawledTasks = tasks.map(crawlSingle)
     browser.deleteAllCookies
     CollectedResult(crawledTasks)
   }
 
   private def crawlSingle(task: SingleTask) = {
-    try {
-      tryCrawl(task)
-    }
+    try tryCrawl(task)
     catch {
       case cause: Throwable => CrawlFail(task, cause)
     }
