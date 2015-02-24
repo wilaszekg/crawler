@@ -13,16 +13,23 @@ import pl.edu.agh.crawler.task.{ComposedTask, SingleTask}
 
 class CrawlerTest extends FlatSpec with Matchers {
 
-  class TestCrawler extends Crawler(mock(classOf[PhantomJSDriver])) {
-    override val browser = mock(classOf[Browser])
-
+  def testCrawler() = {
+    val browser = mock(classOf[Browser])
     doReturn(browserWait).when(browser).waitUntil
+
+    new Crawler(browser, mock(classOf[PhantomJSDriver]))
   }
 
   val browserWait = mock(classOf[BrowserWait])
 
+  it should "prepare phantom webPage on crawler init" in {
+    val crawler: Crawler = testCrawler()
+
+    verify(crawler.browser).preparePhantomWebPage
+  }
+
   it should "crawl with depth 1" in {
-    val crawler: Crawler = new TestCrawler
+    val crawler: Crawler = testCrawler()
 
     crawler crawl SingleTask("any-url", 1)
 
@@ -30,7 +37,7 @@ class CrawlerTest extends FlatSpec with Matchers {
   }
 
   it should "crawl with depth 3" in {
-    val crawler: Crawler = new TestCrawler
+    val crawler: Crawler = testCrawler()
 
     crawler crawl SingleTask("any-url", 3)
 
@@ -38,7 +45,7 @@ class CrawlerTest extends FlatSpec with Matchers {
   }
 
   it should "cleanup browser" in {
-    val crawler: Crawler = new TestCrawler
+    val crawler: Crawler = testCrawler()
 
     crawler crawl SingleTask("any-url", 1)
 
@@ -46,7 +53,7 @@ class CrawlerTest extends FlatSpec with Matchers {
   }
 
   it should "cleanup prepare custom scripts" in {
-    val crawler: Crawler = new TestCrawler
+    val crawler: Crawler = testCrawler()
 
     crawler crawl SingleTask("any-url", 1)
 
@@ -54,7 +61,7 @@ class CrawlerTest extends FlatSpec with Matchers {
   }
 
   it should "crawl single task" in {
-    val crawler = new TestCrawler
+    val crawler = testCrawler()
     when(crawler.driver.getPageSource).thenReturn("page source")
     val task: SingleTask = SingleTask("any.url", 0)
 
@@ -70,7 +77,7 @@ class CrawlerTest extends FlatSpec with Matchers {
   }
 
   it should "run auth action" in {
-    val crawler = new TestCrawler
+    val crawler = testCrawler()
     val (actionSupplier: ActionSupplier, action: RecordedAction) = mockAuthAction
 
     crawler crawl ComposedTask(List(), actionSupplier)
@@ -80,7 +87,7 @@ class CrawlerTest extends FlatSpec with Matchers {
 
 
   it should "return CollectedResult for ComposedTask" in {
-    val crawler = new TestCrawler
+    val crawler = testCrawler()
     val (actionSupplier: ActionSupplier, action: RecordedAction) = mockAuthAction
 
     val result: CrawlResult = crawler crawl ComposedTask(List(), actionSupplier)
@@ -89,7 +96,7 @@ class CrawlerTest extends FlatSpec with Matchers {
   }
 
   it should "crawl composed tasks" in {
-    val crawler = new TestCrawler
+    val crawler = testCrawler()
     val (actionSupplier, action) = mockAuthAction
     doReturn("source1").doReturn("source2").when(crawler.driver).getPageSource
     val task1: SingleTask = SingleTask("first.url", 1)
@@ -107,7 +114,7 @@ class CrawlerTest extends FlatSpec with Matchers {
   }
 
   it should "wrap any exception into CrawlFail" in {
-    val crawler = new TestCrawler
+    val crawler = testCrawler()
     val (actionSupplier, action) = mockAuthAction
     doThrow(classOf[IllegalStateException]).doReturn("source2").when(crawler.driver).getPageSource
     val task1: SingleTask = SingleTask("first.url", 1)

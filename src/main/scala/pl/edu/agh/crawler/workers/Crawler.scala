@@ -7,11 +7,14 @@ import pl.edu.agh.crawler.browser.Browser
 import pl.edu.agh.crawler.result._
 import pl.edu.agh.crawler.task.{ComposedTask, CrawlTask, SingleTask}
 
-class Crawler(val driver: PhantomJSDriver) {
-
-  val browser: Browser = new Browser(driver)
+class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
 
   val scrollCrawler: ScrollCrawler = new ScrollCrawler(browser)
+  browser.preparePhantomWebPage
+
+  def this(driver: PhantomJSDriver) = {
+    this(new Browser(driver), driver)
+  }
 
   def crawl(task: CrawlTask): CrawlResult = {
     task match {

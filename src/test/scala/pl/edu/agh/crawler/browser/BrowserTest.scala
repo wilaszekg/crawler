@@ -14,6 +14,5 @@ class BrowserTest extends FlatSpec {
 
     Mockito.verify(driver).executeScript(scripts.util)
     Mockito.verify(driver).executeScript(scripts.domEvents)
-    Mockito.verify(driver).executePhantomJS(scripts.phantom.domEvents)
   }
 }

@@ -11,4 +11,6 @@ object crawlerConfig {
   val domStableTimeout = config.getInt("crawler.timeout.domStable")
   val scrollEffectAjaxTimeout = config.getInt("crawler.timeout.scrollEffectAjax")
   val scrollEffectRenderTimeout = config.getInt("crawler.timeout.scrollEffectRender")
+
+  val excludedResources = config.getStringList("crawler.excludedResources")
 }
