@@ -56,6 +56,9 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
   }
 
   private def openPage(task: SingleTask, timer: Timer): TimeTask[Fluent] = {
+    if (task.getPageSourceOnly) {
+      browser.setOnlyResourceToRequest(task.url)
+    }
     val loadTask = timer measure browser.goTo(task.url)
     browser.prepareCustomScripts
     loadTask

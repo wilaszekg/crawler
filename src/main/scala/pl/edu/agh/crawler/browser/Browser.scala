@@ -37,11 +37,11 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
   }
 
   def setOnlyResourceToRequest(url: String) = {
-    driver.executePhantomJS(s"this.onlyResourceToRequest = $url;")
+    driver.executePhantomJS(s"this.onlyResourceToRequest = '$url';")
   }
 
   def resetOnlyResourceToRequest() = {
-    driver.executePhantomJS(s"this.onlyResourceToRequest = null;")
+    driver.executePhantomJS("this.onlyResourceToRequest = null;")
   }
 
   def waitUntil = new BrowserWait(this)
@@ -49,8 +49,10 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
   /**
    * Cleans browser state to enable further crawling in this browser
    */
-  def cleanUp =
+  def cleanUp = {
     driver.executeScript("window.onbeforeunload = null;")
+    resetOnlyResourceToRequest()
+  }
 
   def getRemovedText: Seq[String] =
     driver.executeScript("return window.removedNodes;").asInstanceOf[util.List[String]].toList

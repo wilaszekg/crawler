@@ -15,8 +15,6 @@ page.ajaxRequests = [];
 page.excludeResources = [];
 page.onlyResourceToRequest = null;
 
-page.abortedUrls = [];
-
 page.shouldSkipRequestedResource = function (requestUrl) {
     var endsWith = function (source, substring) {
         return source.indexOf(substring, source.length - substring.length) !== -1;
@@ -42,7 +40,6 @@ page.shouldSkipRequestedResource = function (requestUrl) {
 
 page.onResourceRequested = function (requestData, networkRequest) {
     if (page.shouldSkipRequestedResource(requestData.url)) {
-        page.abortedUrls.push(requestData.url)
         networkRequest.abort();
     }
 
@@ -60,6 +57,9 @@ page.onResourceRequested = function (requestData, networkRequest) {
 };
 
 page.onResourceReceived = function (response) {
+    if (page.onlyResourceToRequest && response.redirectURL) {
+        page.onlyResourceToRequest = response.redirectURL;
+    }
     var indexOfId = page.ajaxRequests.indexOf(response.id);
     if (indexOfId >= 0) {
         page.ajaxRequests.splice(indexOfId, 1);
