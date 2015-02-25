@@ -4,7 +4,6 @@ import scala.io.{BufferedSource, Source}
 
 object scripts {
   val scriptsDirectory = "/javascript/"
-  lazy val elementVisibility = readScript("element_visibility.js")
   lazy val util = readScript("util.js")
   lazy val crawler = readScript("crawler.js")
   lazy val domEvents = readScript("dom_events.js")
