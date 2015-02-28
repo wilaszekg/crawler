@@ -24,6 +24,8 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
     }
   }
 
+  def quit = driver.quit()
+
   private def crawlWithAuthentication(composedTask: ComposedTask, authAction: ActionSupplier) = {
     authAction(driver).perform()
     crawlMany(composedTask.tasks, composedTask.clearCookies)

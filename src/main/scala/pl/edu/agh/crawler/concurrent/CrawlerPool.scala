@@ -2,17 +2,17 @@ package pl.edu.agh.crawler.concurrent
 
 import java.util.concurrent.LinkedBlockingQueue
 
-import pl.edu.agh.crawler.phantom.webDriverFactory
+import pl.edu.agh.crawler.phantom.crawlerFactory
 import pl.edu.agh.crawler.workers.Crawler
 
 class CrawlerPool(val size: Int) {
   val crawlers: Seq[Crawler] =
-    for (i <- 0 until size) yield new Crawler(webDriverFactory.createWebDriver)
+    for (i <- 0 until size) yield crawlerFactory.createCrawler
 
   val freeCrawlers = new LinkedBlockingQueue[Crawler]
   crawlers foreach (freeCrawlers.put(_))
 
-  def quitAll = crawlers.foreach(_.driver.quit())
+  def quitAll = crawlers.foreach(_.quit)
 
   def takeCrawler =
     freeCrawlers.take()
