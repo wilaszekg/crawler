@@ -84,3 +84,16 @@ A crawling task is description of a task to be performed by a crawler. To create
 * `ComposedAuthTask` - enriches `ComposedTask` with authentication action:
   * `composedTask` - instance of `ComposedTask`
   * `authAction` - authentication action to execute before crawling the `composedTask`
+
+# Recording authentication actions
+To authenticate a crawler in a web application, you can record your interaction with web page. You have to [download Selenium IDE](http://www.seleniumhq.org/download/) - a firefox plugin.
+
+## How to record the action
+Open Selenium IDE and start recording (red circle has to be active). Go to the log-in page and just fill in the log-in form. Wait for the page to load, go back to Selenium IDE and select File -> Export Test Case As... -> "Java / JUnit4 / WebDriver".
+
+## How to use recorded action
+Read the content of exported action and pass it to `actionRecordCompiler` object to `compile` method. It will return an instance of `ActionSupplier` which can be used as `authAction` of `ComposedAuthTask`.
+```
+val actionSource = Source.fromURL(getClass.getResource("/ExportedAction")).mkString
+val actionSupplier = actionRecordCompiler.compile(actionSource)
+```
