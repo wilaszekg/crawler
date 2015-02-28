@@ -27,6 +27,10 @@ crawler.timeout.domStable = 5
 crawler.timeout.scrollEffectAjax = 3
 # Detect when some more content was added to the HTML after scrolling
 crawler.timeout.scrollEffectRender = 3
+
+
+# Extensions of resources to skip
+crawler.excludedResources = [".css", ".jpg", ".png", ".gif"]
 ```
 
 # Run the crawler
@@ -41,13 +45,12 @@ import pl.edu.agh.crawler.workers.Crawler
 
 object singleThread {
   def main(args: Array[String]) {
-    val driver: PhantomJSDriver = webDriverFactory createWebDriver
-    val crawler: Crawler = new Crawler(driver)
+    val crawler: Crawler = crawlerFactory createCrawler
 
-    // crawling "https://github.com/wilaszekg/crawler" with depth 2 and 3 attempts to scroll down the page
-    val crawlResult: CrawlResult = crawler.crawl(new CrawlingTask("https://github.com/wilaszekg/crawler", 2, 3))
+    // crawling "https://github.com/wilaszekg/crawler" with depth 2:
+    val crawlResult = crawler.crawl(SingleTask("https://github.com/wilaszekg/crawler", 2))
 
-    driver.quit()
+    crawler quit
   }
 }
 
@@ -60,10 +63,10 @@ val crawlerPool: CrawlerPool = new CrawlerPool(4)
 val multiCrawler = new MultiCrawler(crawlerPool)
 ```
 
-Then just invoke `crawl` method to crawl `url` with `depth` and `scrollAttempts`:
+Then just invoke `crawl` method to crawl `url` with `depth`:
 ```
-multiCrawler.crawl(new CrawlingTask(url, depth, scrollAttempts))
+multiCrawler.crawl(SingleTask(url, depth))
 ```
 
 This call is blocking and returns as soon as there is free crawler to handle your request. This function returs a promise of crawling result: `Promise[CrawlResult]`.
-To quit all drivers of the `crawlerPool`, use `quitAll` method.
+To quit all crawlers of the `crawlerPool`, use `quitAll` method.
