@@ -70,3 +70,17 @@ multiCrawler.crawl(SingleTask(url, depth))
 
 This call is blocking and returns as soon as there is free crawler to handle your request. This function returs a promise of crawling result: `Promise[CrawlResult]`.
 To quit all crawlers of the `crawlerPool`, use `quitAll` method.
+
+# Crawling tasks
+A crawling task is description of a task to be performed by a crawler. To create a task, you have to create one of case classes of `pl.edu.agh.crawler.task.CrawlTask`:
+* `SingleTask` - for crawling a single URL:
+  * `url`
+  * `depth` - depth of crawling user interface by interacting with html elements
+  * `getPageSourceOnly` (default `false`) - forces crawler to skip all resources appart from html page source (useful for simple pages without rich interface)
+  * `scrollAttempts` (default `0`) - number of attempts to scroll down the page and fetch new content
+* `ComposedTask` - for crawling multiple URLs and manage cookies:
+  * `tasks` - list of single tasks (class `SingleClass`)
+  * `clearCookies` (default `true`) - to delete all cookies (to clear logged in sesssion)
+* `ComposedAuthTask` - enriches `ComposedTask` with authentication action:
+  * `composedTask` - instance of `ComposedTask`
+  * `authAction` - authentication action to execute before crawling the `composedTask`
