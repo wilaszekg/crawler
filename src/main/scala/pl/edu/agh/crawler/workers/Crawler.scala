@@ -5,7 +5,7 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver
 import pl.edu.agh.crawler.action.ActionSupplier
 import pl.edu.agh.crawler.browser.Browser
 import pl.edu.agh.crawler.result._
-import pl.edu.agh.crawler.task.{ComposedTask, CrawlTask, SingleTask}
+import pl.edu.agh.crawler.task.{ComposedAuthTask, ComposedTask, CrawlTask, SingleTask}
 
 class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
 
@@ -18,15 +18,22 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
 
   def crawl(task: CrawlTask): CrawlResult = {
     task match {
-      case ComposedTask(tasks, authAction) => crawlComposed(tasks, authAction)
-      case task: SingleTask => crawlSingle(task)
+      case ComposedAuthTask(composedTask, authAction) => crawlWithAuthentication(composedTask, authAction)
+      case ComposedTask(tasks, clearCookies) => crawlMany(tasks, clearCookies)
+      case singleTask: SingleTask => crawlSingle(singleTask)
     }
   }
 
-  def crawlComposed(tasks: List[SingleTask], authAction: ActionSupplier): CollectedResult = {
+  private def crawlWithAuthentication(composedTask: ComposedTask, authAction: ActionSupplier) = {
     authAction(driver).perform()
+    crawlMany(composedTask.tasks, composedTask.clearCookies)
+  }
+
+  private def crawlMany(tasks: List[SingleTask], clearCookies: Boolean): CollectedResult = {
     val crawledTasks = tasks.map(crawlSingle)
-    browser.deleteAllCookies
+    if (clearCookies) {
+      browser.deleteAllCookies
+    }
     CollectedResult(crawledTasks)
   }
 
