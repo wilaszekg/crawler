@@ -70,6 +70,7 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
     }
     val loadTask = timer measure browser.goTo(task.url)
     browser.prepareCustomScripts
+    browser.waitUntil ajaxCompleted()
     loadTask
   }
 
