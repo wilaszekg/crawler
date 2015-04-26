@@ -3,8 +3,8 @@ package pl.edu.agh.crawler.result
 class Timer {
   val start = System.currentTimeMillis()
 
-  def measure[T](task: => T) = {
+  def measure[T](task: => T): TimeTask[T] = {
     val result: T = task
-    new TimeTask(System.currentTimeMillis() - start, result)
+    TimeTask(System.currentTimeMillis() - start, result)
   }
 }

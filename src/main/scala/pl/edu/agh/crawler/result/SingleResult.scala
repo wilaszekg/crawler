@@ -4,4 +4,4 @@ import pl.edu.agh.crawler.task.SingleTask
 
 case class SingleResult(task: SingleTask,
                         crawledContent: CrawledContent,
-                        statistics: CrawlingStatistics) extends CrawlResult
+                        statistics: CrawlingStatistics) extends CrawlingResult

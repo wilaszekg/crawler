@@ -1,6 +1,6 @@
 package pl.edu.agh.crawler.concurrent
 
-import pl.edu.agh.crawler.result.CrawlResult
+import pl.edu.agh.crawler.result.CrawlingResult
 import pl.edu.agh.crawler.task.SingleTask
 import pl.edu.agh.crawler.workers.Crawler
 
@@ -10,14 +10,14 @@ import scala.concurrent.{Promise, future, promise}
 class MultiCrawler(val crawlerPool: CrawlerPool) {
 
   def crawl(crawlTask: SingleTask) = {
-    val resultPromise = promise[CrawlResult]
+    val resultPromise = promise[CrawlingResult]
     dispatchFutureTask(crawlTask, resultPromise, crawlerPool.takeCrawler)
     resultPromise
   }
 
-  private def dispatchFutureTask(crawlTask: SingleTask, resultPromise: Promise[CrawlResult], crawler: Crawler) = future {
+  private def dispatchFutureTask(crawlTask: SingleTask, resultPromise: Promise[CrawlingResult], crawler: Crawler) = future {
     try {
-      val result: CrawlResult = crawler crawl crawlTask
+      val result: CrawlingResult = crawler crawl crawlTask
       resultPromise success result
     }
     catch {

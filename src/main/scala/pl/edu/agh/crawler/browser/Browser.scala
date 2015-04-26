@@ -4,8 +4,10 @@ import java.util
 import java.util.concurrent.TimeUnit
 
 import org.fluentlenium.core.FluentPage
+import org.openqa.selenium.OutputType
 import org.openqa.selenium.phantomjs.PhantomJSDriver
 import pl.edu.agh.crawler.config.crawlerConfig
+import pl.edu.agh.crawler.result.{ScreenShotResult, TimeTask, Timer}
 
 import scala.collection.JavaConversions._
 import scala.util.parsing.json.JSONArray
@@ -67,4 +69,10 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
 
   def deleteAllCookies =
     driver.manage.deleteAllCookies
+
+  def makeScreenShot: ScreenShotResult = {
+    new Timer measure driver.getScreenshotAs(OutputType.FILE) match {
+      case TimeTask(time, file) => ScreenShotResult(file, time)
+    }
+  }
 }

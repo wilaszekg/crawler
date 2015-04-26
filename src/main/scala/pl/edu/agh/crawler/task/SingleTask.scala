@@ -1,6 +1,13 @@
 package pl.edu.agh.crawler.task
 
+trait Job
+
+case class Scroll(attempts: Int) extends Job
+
+case class Crawl(depth: Int) extends Job
+
+class ScreenShot extends Job
+
 case class SingleTask(url: String,
-                      depth: Int,
-                      getPageSourceOnly: Boolean = false,
-                      scrollAttempts: Int = 0) extends CrawlTask
+                      jobs: List[Job],
+                      getPageSourceOnly: Boolean = false) extends CrawlTask

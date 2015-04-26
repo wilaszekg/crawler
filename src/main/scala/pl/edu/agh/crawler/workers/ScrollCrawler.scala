@@ -3,13 +3,15 @@ package pl.edu.agh.crawler.workers
 import org.openqa.selenium.TimeoutException
 import pl.edu.agh.crawler.browser.Browser
 import pl.edu.agh.crawler.config.crawlerConfig
-import pl.edu.agh.crawler.result.{ScrollAttempt, Timer}
+import pl.edu.agh.crawler.result.{ScrollAttempt, ScrollResult, Timer}
 
 
 class ScrollCrawler(val browser: Browser) {
 
-  def execute(attempts: Int) =
-    new Timer measure scrollAndCountSuccessfulAttempts(attempts, 0)
+  def execute(attempts: Int): ScrollResult = {
+    val timeTask = new Timer measure scrollAndCountSuccessfulAttempts(attempts, 0)
+    new ScrollResult(timeTask.result.successfulTimes, timeTask.time)
+  }
 
   private def scrollAndCountSuccessfulAttempts(attemptsLeft: Int, successfulAttempts: Int): ScrollAttempt =
     if (attemptsLeft > 0) tryScroll(attemptsLeft, successfulAttempts)

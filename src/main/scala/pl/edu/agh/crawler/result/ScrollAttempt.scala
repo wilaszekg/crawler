@@ -1,3 +1,3 @@
 package pl.edu.agh.crawler.result
 
-class ScrollAttempt(val successfulTimes: Int) {}
+case class ScrollAttempt(successfulTimes: Int)

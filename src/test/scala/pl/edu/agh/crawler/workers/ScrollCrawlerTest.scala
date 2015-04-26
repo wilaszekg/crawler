@@ -5,7 +5,6 @@ import org.mockito.Mockito._
 import org.openqa.selenium.TimeoutException
 import org.scalatest.{FlatSpec, Matchers}
 import pl.edu.agh.crawler.browser.{Browser, BrowserWait}
-import pl.edu.agh.crawler.result.{ScrollAttempt, TimeTask}
 
 class ScrollCrawlerTest extends FlatSpec with Matchers {
 
@@ -14,10 +13,10 @@ class ScrollCrawlerTest extends FlatSpec with Matchers {
     val browserWait = mock(classOf[BrowserWait])
     when(browser waitUntil) thenReturn browserWait
 
-    val task: TimeTask[ScrollAttempt] = new ScrollCrawler(browser).execute(0)
+    val result = new ScrollCrawler(browser).execute(0)
 
     verify(browser, times(0)).scrollToBottom
-    task.result.successfulTimes shouldBe 0
+    result.successAttempts shouldBe 0
   }
 
   it should "have no successful scroll attempts when DOM doesn't change" in {
@@ -26,10 +25,10 @@ class ScrollCrawlerTest extends FlatSpec with Matchers {
     when(browser waitUntil) thenReturn browserWait
     when(browserWait heightExtend (anyLong())) thenThrow new TimeoutException()
 
-    val task: TimeTask[ScrollAttempt] = new ScrollCrawler(browser).execute(3)
+    val result = new ScrollCrawler(browser).execute(3)
 
     verify(browser, times(1)).scrollToBottom
-    task.result.successfulTimes shouldBe 0
+    result.successAttempts shouldBe 0
   }
 
   it should "have 1 successful scroll" in {
@@ -38,10 +37,10 @@ class ScrollCrawlerTest extends FlatSpec with Matchers {
     when(browser waitUntil) thenReturn browserWait
     doReturn(null).doThrow(classOf[TimeoutException]).when(browserWait).heightExtend(anyLong())
 
-    val task: TimeTask[ScrollAttempt] = new ScrollCrawler(browser).execute(3)
+    val result = new ScrollCrawler(browser).execute(3)
 
     verify(browser, times(2)).scrollToBottom
-    task.result.successfulTimes shouldBe 1
+    result.successAttempts shouldBe 1
   }
 
   it should "have all 3 successful scrolls" in {
@@ -50,9 +49,9 @@ class ScrollCrawlerTest extends FlatSpec with Matchers {
     when(browser waitUntil) thenReturn browserWait
     doReturn(null).when(browserWait).heightExtend(anyLong())
 
-    val task: TimeTask[ScrollAttempt] = new ScrollCrawler(browser).execute(3)
+    val result = new ScrollCrawler(browser).execute(3)
 
     verify(browser, times(3)).scrollToBottom
-    task.result.successfulTimes shouldBe 3
+    result.successAttempts shouldBe 3
   }
 }

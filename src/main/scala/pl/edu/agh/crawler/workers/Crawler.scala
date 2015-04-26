@@ -5,7 +5,7 @@ import org.openqa.selenium.phantomjs.PhantomJSDriver
 import pl.edu.agh.crawler.action.ActionSupplier
 import pl.edu.agh.crawler.browser.Browser
 import pl.edu.agh.crawler.result._
-import pl.edu.agh.crawler.task.{ComposedAuthTask, ComposedTask, CrawlTask, SingleTask}
+import pl.edu.agh.crawler.task._
 
 class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
 
@@ -16,7 +16,7 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
     this(new Browser(driver), driver)
   }
 
-  def crawl(task: CrawlTask): CrawlResult = {
+  def crawl(task: CrawlTask): CrawlingResult = {
     task match {
       case ComposedAuthTask(composedTask, authAction) => crawlWithAuthentication(composedTask, authAction)
       case ComposedTask(tasks, clearCookies) => crawlMany(tasks, clearCookies)
@@ -42,18 +42,23 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
   private def crawlSingle(task: SingleTask) = {
     try tryCrawl(task)
     catch {
-      case cause: Throwable => CrawlFail(task, cause)
+      case cause: Throwable => CrawlingFail(task, cause)
     }
   }
 
   def tryCrawl(task: SingleTask): SingleResult = {
     val timer = new Timer
-
     val loadTask = openPage(task, timer)
-    val scrollTask = scrollCrawler execute task.scrollAttempts
-    val wholeTask = timer measure breadthFirstCrawling(task.depth)
 
-    finalizeAndGetResult(task, new CrawlingStatistics(loadTask.time, wholeTask.time, scrollTask.time, scrollTask.result))
+    val jobsResults = task.jobs.map({
+      case Scroll(attempts) => scrollCrawler execute attempts
+      case Crawl(depth) => breadthFirstCrawling(depth)
+      case _: ScreenShot => browser makeScreenShot
+    })
+
+    val wholeTask = timer measure()
+
+    finalizeAndGetResult(task, new CrawlingStatistics(loadTask.time, wholeTask.time, jobsResults))
   }
 
   private def finalizeAndGetResult(task: SingleTask, crawlingStatistics: CrawlingStatistics): SingleResult = {
@@ -74,9 +79,13 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
     loadTask
   }
 
-  private def breadthFirstCrawling(depth: Int) =
-    for (i <- 0 until depth)
-      executeCrawling
+  private def breadthFirstCrawling(depth: Int): CrawlResult = {
+    val timeTask: TimeTask[Unit] = new Timer measure {
+      for (i <- 0 until depth)
+        executeCrawling
+    }
+    CrawlResult(timeTask.time)
+  }
 
   private def executeCrawling = {
     browser.executeCrawlingScripts
