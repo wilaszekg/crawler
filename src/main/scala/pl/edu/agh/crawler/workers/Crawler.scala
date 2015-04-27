@@ -62,8 +62,10 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
   }
 
   private def finalizeAndGetResult(task: SingleTask, crawlingStatistics: CrawlingStatistics): SingleResult = {
-    val result: SingleResult =
-      SingleResult(task, new CrawledContent(driver.getPageSource, browser.getRemovedText), crawlingStatistics)
+    val result: SingleResult = SingleResult(
+      task,
+      new CrawledContent(driver.getPageSource, browser.getRemovedText, browser.iFrames()),
+      crawlingStatistics)
 
     browser.cleanUp
     result

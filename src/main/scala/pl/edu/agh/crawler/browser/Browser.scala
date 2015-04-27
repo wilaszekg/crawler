@@ -4,12 +4,13 @@ import java.util
 import java.util.concurrent.TimeUnit
 
 import org.fluentlenium.core.FluentPage
-import org.openqa.selenium.OutputType
 import org.openqa.selenium.phantomjs.PhantomJSDriver
+import org.openqa.selenium.{By, OutputType}
 import pl.edu.agh.crawler.config.crawlerConfig
 import pl.edu.agh.crawler.result.{ScreenShotResult, TimeTask, Timer}
 
 import scala.collection.JavaConversions._
+import scala.util.Try
 import scala.util.parsing.json.JSONArray
 
 class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
@@ -75,4 +76,23 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
       case TimeTask(time, file) => ScreenShotResult(file, time)
     }
   }
+
+  def iFrames(): Map[String, String] = {
+    val iFramesCount = Try {
+      driver.findElements(By.tagName("iframe")).size()
+    }.getOrElse(0)
+
+    val srcToContent: Map[String, String] = (0 to iFramesCount).map(frameId => Try {
+      driver.switchTo().defaultContent()
+      val frame = driver.switchTo().frame(frameId)
+      (frame.getCurrentUrl, frame.getPageSource)
+    }).filter(_.isSuccess)
+      .map(_.get)
+      .toMap
+
+    driver.switchTo().defaultContent()
+    srcToContent
+  }
+
 }
+

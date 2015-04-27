@@ -1,5 +1,3 @@
 package pl.edu.agh.crawler.result
 
-class CrawledContent(val pageContent: String, val removedContent: Seq[String]) {
-
-}
+case class CrawledContent(pageContent: String, removedContent: Seq[String], iFramesBySrc: Map[String, String])
