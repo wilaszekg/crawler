@@ -11,31 +11,37 @@ page.onConfirm = function (msg) {
     return false;
 };
 
+page.nonAjaxSuffixes = [".js", ".css", ".png", ".jpg"];
 page.ajaxRequests = [];
+page.ajaxCounter = 0;
 page.excludeResources = [];
 page.onlyResourceToRequest = null;
 
-page.shouldSkipRequestedResource = function (requestUrl) {
+page.urlEndsWithOneOf = function (url, suffixes) {
     var endsWith = function (source, substring) {
         return source.indexOf(substring, source.length - substring.length) !== -1;
     };
 
-    if (page.onlyResourceToRequest) {
-        return !(page.onlyResourceToRequest === requestUrl ||
-        page.onlyResourceToRequest + "/" === requestUrl);
-    }
-
-    var startOfQuery = requestUrl.indexOf("?");
+    var startOfQuery = url.indexOf("?");
     var requestUrlWithoutParams = startOfQuery >= 0 ?
-        requestUrl.substring(0, startOfQuery) : requestUrl;
+        url.substring(0, startOfQuery) : url;
 
-    for (var i = 0; i < page.excludeResources.length; i++) {
-        if (endsWith(requestUrlWithoutParams, page.excludeResources[i])) {
+    for (var i = 0; i < suffixes.length; i++) {
+        if (endsWith(requestUrlWithoutParams, suffixes[i])) {
             return true;
         }
     }
 
     return false;
+};
+
+page.shouldSkipRequestedResource = function (requestUrl) {
+    if (page.onlyResourceToRequest) {
+        return !(page.onlyResourceToRequest === requestUrl ||
+        page.onlyResourceToRequest + "/" === requestUrl);
+    }
+
+    return page.urlEndsWithOneOf(requestUrl, page.excludeResources);
 };
 
 page.onResourceRequested = function (requestData, networkRequest) {
@@ -51,7 +57,8 @@ page.onResourceRequested = function (requestData, networkRequest) {
         }
     }
 
-    if (xRequestedWith && xRequestedWith.value == 'XMLHttpRequest') {
+    var hasXhrHeader = xRequestedWith && xRequestedWith.value == 'XMLHttpRequest';
+    if (hasXhrHeader || !page.urlEndsWithOneOf(requestData.url, page.nonAjaxSuffixes)) {
         page.ajaxRequests.push(requestData.id);
     }
 };
@@ -63,5 +70,6 @@ page.onResourceReceived = function (response) {
     var indexOfId = page.ajaxRequests.indexOf(response.id);
     if (indexOfId >= 0) {
         page.ajaxRequests.splice(indexOfId, 1);
+        page.ajaxCounter = page.ajaxCounter + 1;
     }
 };

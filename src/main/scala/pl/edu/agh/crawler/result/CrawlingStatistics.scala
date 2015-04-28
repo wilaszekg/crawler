@@ -10,4 +10,4 @@ case class CrawlResult(time: Long) extends JobResult
 
 case class ScreenShotResult(screen: File, time: Long) extends JobResult
 
-case class CrawlingStatistics(loadTime: Long, elapsedTime: Long, jobs: List[JobResult])
+case class CrawlingStatistics(loadTime: Long, elapsedTime: Long, jobs: List[JobResult], ajaxRequestsCount: Number)

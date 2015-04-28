@@ -58,7 +58,7 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
 
     val wholeTask = timer measure()
 
-    finalizeAndGetResult(task, new CrawlingStatistics(loadTask.time, wholeTask.time, jobsResults))
+    finalizeAndGetResult(task, new CrawlingStatistics(loadTask.time, wholeTask.time, jobsResults, browser.ajaxRequestsCount))
   }
 
   private def finalizeAndGetResult(task: SingleTask, crawlingStatistics: CrawlingStatistics): SingleResult = {

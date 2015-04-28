@@ -17,8 +17,12 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
 
   override def goTo(url: String) = {
     driver.navigate().to(url)
+    resetAjaxCounter()
     await().pollingEvery(100, TimeUnit.MILLISECONDS).atMost(crawlerConfig.pageLoadTimeout, TimeUnit.SECONDS).untilPage().isLoaded
   }
+
+  private def resetAjaxCounter() =
+    driver.executePhantomJS("this.ajaxCounter = 0;")
 
   def executeCrawlingScripts = {
     driver.executeScript(scripts.crawler)
@@ -43,7 +47,7 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
     driver.executePhantomJS(s"this.onlyResourceToRequest = '$url';")
   }
 
-  def resetOnlyResourceToRequest() = {
+  private def resetOnlyResourceToRequest() = {
     driver.executePhantomJS("this.onlyResourceToRequest = null;")
   }
 
@@ -76,6 +80,9 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
       case TimeTask(time, file) => ScreenShotResult(file, time)
     }
   }
+
+  def ajaxRequestsCount: Number =
+    driver.executePhantomJS("return this.ajaxCounter").asInstanceOf[Number]
 
   def iFrames(): Map[String, String] = {
     val iFramesCount = Try {
