@@ -8,20 +8,18 @@ import pl.edu.agh.crawler.config.crawlerConfig
 
 class BrowserWait(val browser: Browser) {
 
-  def ajaxCompleted(timeout: Int = crawlerConfig.ajaxCompleteTimeout) =
+  def ajaxCompleted(timeout: Int = crawlerConfig.ajaxCompleteTimeout): Unit =
     try {
       browser.await().pollingEvery(500, TimeUnit.MILLISECONDS).atMost(timeout, TimeUnit.SECONDS).until(new AjaxSilenceCondition)
-    }
-    catch {
-      case e: TimeoutException => e.printStackTrace()
+    } catch {
+      case e: TimeoutException => ()
     }
 
-  def domStable(timeout: Int = crawlerConfig.domStableTimeout) =
+  def domStable(timeout: Int = crawlerConfig.domStableTimeout): Unit =
     try {
       browser.await().pollingEvery(500, TimeUnit.MILLISECONDS).atMost(timeout, TimeUnit.SECONDS).until(new DomSilenceCondition)
-    }
-    catch {
-      case e: TimeoutException => e.printStackTrace()
+    } catch {
+      case e: TimeoutException => ()
     }
 
   def heightExtend(initialHeight: Long) =
