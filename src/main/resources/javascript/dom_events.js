@@ -9,7 +9,7 @@ window.onbeforeunload = function (event) {
 
 document.addEventListener("DOMNodeRemoved", function (event) {
     if (event.target.innerText) {
-        window.removedNodes.push(event.target.innerText);
+        window.removedNodes.push([event.target.innerText, window.getXPath(event.target)]);
     }
 });
 

@@ -7,7 +7,7 @@ import org.fluentlenium.core.FluentPage
 import org.openqa.selenium.phantomjs.PhantomJSDriver
 import org.openqa.selenium.{By, OutputType}
 import pl.edu.agh.crawler.config.crawlerConfig
-import pl.edu.agh.crawler.result.{ScreenShotResult, TimeTask, Timer}
+import pl.edu.agh.crawler.result.{RemovedNode, ScreenShotResult, TimeTask, Timer}
 
 import scala.collection.JavaConversions._
 import scala.util.Try
@@ -61,8 +61,10 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
     resetOnlyResourceToRequest()
   }
 
-  def getRemovedText: Seq[String] =
-    driver.executeScript("return window.removedNodes;").asInstanceOf[util.List[String]].toList
+  def removedContent: Seq[RemovedNode] =
+    driver.executeScript("return window.removedNodes;")
+      .asInstanceOf[util.List[util.List[String]]]
+      .map(contentAndXpath => RemovedNode(contentAndXpath(0), contentAndXpath(1)))
 
   def scrollToBottom = {
     for (i <- 0 until 3)
