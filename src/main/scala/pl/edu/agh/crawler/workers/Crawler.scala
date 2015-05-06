@@ -58,13 +58,13 @@ class Crawler(val browser: Browser, val driver: PhantomJSDriver) {
 
     val wholeTask = timer measure()
 
-    finalizeAndGetResult(task, new CrawlingStatistics(loadTask.time, wholeTask.time, jobsResults, browser.ajaxRequestsCount))
+    finalizeAndGetResult(task, CrawlingStatistics(loadTask.time, wholeTask.time, jobsResults, browser.ajaxRequestsCount))
   }
 
   private def finalizeAndGetResult(task: SingleTask, crawlingStatistics: CrawlingStatistics): SingleResult = {
     val result: SingleResult = SingleResult(
       task,
-      new CrawledContent(driver.getPageSource, browser.removedContent, browser.iFrames()),
+      CrawledContent(driver.getPageSource, browser.removedContent, browser.iFrames()),
       crawlingStatistics)
 
     browser.cleanUp
