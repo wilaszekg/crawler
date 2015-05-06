@@ -13,6 +13,8 @@ The crawler is using [typesafe configs](https://github.com/typesafehub/config), 
 ```
 # your phantomJS installation path
 crawler.phantomjs.path = "C:/tools/phantomjs-1.9.8-windows/phantomjs.exe"
+# User Agent to be used by Phantom - OPTIONAL
+crawler.phantomjs.userAgent = "Chrome x.y"
 
 # Timeouts - in seconds
 
@@ -38,9 +40,8 @@ There are two ways of running the crawler. For test or development purposes a si
 
 ## Single thread mode
 ```
-import org.openqa.selenium.phantomjs.PhantomJSDriver
-import pl.edu.agh.crawler.description.{CrawlResult, CrawlingTask}
-import pl.edu.agh.crawler.phantom.webDriverFactory
+import pl.edu.agh.crawler.phantom.crawlerFactory
+import pl.edu.agh.crawler.task.{Crawl, SingleTask}
 import pl.edu.agh.crawler.workers.Crawler
 
 object singleThread {
@@ -48,7 +49,7 @@ object singleThread {
     val crawler: Crawler = crawlerFactory createCrawler
 
     // crawling "https://github.com/wilaszekg/crawler" with depth 2:
-    val crawlResult = crawler.crawl(SingleTask("https://github.com/wilaszekg/crawler", 2))
+    val crawlResult = crawler.crawl(SingleTask("https://github.com/wilaszekg/crawler", List(Crawl(2))))
 
     crawler quit
   }
@@ -65,7 +66,7 @@ val multiCrawler = new MultiCrawler(crawlerPool)
 
 Then just invoke `crawl` method to crawl `url` with `depth`:
 ```
-multiCrawler.crawl(SingleTask(url, depth))
+multiCrawler.crawl(SingleTask(url, List(Crawl(2))))
 ```
 
 This call is blocking and returns as soon as there is free crawler to handle your request. This function returs a promise of crawling result: `Promise[CrawlResult]`.
