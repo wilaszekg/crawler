@@ -76,7 +76,7 @@ To quit all crawlers of the `crawlerPool`, use `quitAll` method.
 A crawling task is description of a task to be performed by a crawler. To create a task, you have to create one of case classes of `pl.edu.agh.crawler.task.CrawlTask`:
 * `SingleTask` - for crawling a single URL:
   * `url`
-  * `depth` - depth of crawling user interface by interacting with html elements
+  * `jobs: List[Job]` - jobs to perform
   * `getPageSourceOnly` (default `false`) - forces crawler to skip all resources appart from html page source (useful for simple pages without rich interface)
   * `scrollAttempts` (default `0`) - number of attempts to scroll down the page and fetch new content
 * `ComposedTask` - for crawling multiple URLs and manage cookies:
@@ -85,6 +85,14 @@ A crawling task is description of a task to be performed by a crawler. To create
 * `ComposedAuthTask` - enriches `ComposedTask` with authentication action:
   * `composedTask` - instance of `ComposedTask`
   * `authAction` - authentication action to execute before crawling the `composedTask`
+  
+## Jobs
+There are three types of jobs:
+* `Crawl` - crawling user interface:
+  * `depth` - depth of crawling user interface by interacting with html elements
+* `Scroll` - scrolling down the page
+  * `attempts` - how many times to try to scroll. When one attempt fails, there will be no further attempts.
+* `ScreenShot` - taking screen shot
 
 # Recording authentication actions
 To authenticate a crawler in a web application, you can record your interaction with web page. You have to [download Selenium IDE](http://www.seleniumhq.org/download/) - a firefox plugin.
