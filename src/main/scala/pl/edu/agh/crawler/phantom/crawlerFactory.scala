@@ -17,7 +17,8 @@ object crawlerFactory {
     crawlerConfig.userAgent.foreach {
       capabilities.setCapability("phantomjs.page.settings.userAgent", _)
     }
-
-    new PhantomJSDriver(capabilities)
+    val driver = new PhantomJSDriver(capabilities)
+    driver.executePhantomJS("this.viewportSize = {width: 1280,height: 800};")
+    driver
   }
 }

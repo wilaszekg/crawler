@@ -2,12 +2,21 @@ package pl.edu.agh.crawler.action
 
 import net.openhft.compiler.CachedCompiler
 
-object actionRecordCompiler {
-
+object ActionRecordCompiler {
   val nameIterator = Stream.from(1).iterator
 
+  private def generateNextActionName = synchronized {
+    "AghCrawlerRecordedAction" + ActionRecordCompiler.nameIterator.next()
+  }
+}
+
+class ActionRecordCompiler {
+
+  this: SeleniumTestSourceAdapter =>
+
+
   def compile(source: String): ActionSupplier = {
-    val actionClassName: String = generateNextActionName
+    val actionClassName: String = ActionRecordCompiler.generateNextActionName
     val modifiedSource: String = adoptToRecordedAction(source, actionClassName)
     val compiler: CachedCompiler = new CachedCompiler(null, null)
     val actionClass = compiler.loadFromJava(actionClassName, modifiedSource).asInstanceOf[Class[RecordedAction]]
@@ -15,20 +24,7 @@ object actionRecordCompiler {
     new ActionSupplier(actionClass)
   }
 
-  private def generateNextActionName = synchronized {
-    "AghCrawlerRecordedAction" + nameIterator.next()
-  }
 
-  private def adoptToRecordedAction(source: String, actionClassName: String): String = {
-    val classCompilationUnit = new ClassCompilationUnit(source)
-    classCompilationUnit.removePackage()
-    classCompilationUnit.addClassImport("pl.edu.agh.crawler.action.RecordedAction")
-    classCompilationUnit.setExtends("RecordedAction")
-    classCompilationUnit.removeField("driver")
-    classCompilationUnit.renameMethodAnnotatedAs("runAction", "Test")
-    classCompilationUnit.removeUsagesOf("driver", "setUp")
-    classCompilationUnit.setClassName(actionClassName)
-
-    classCompilationUnit.toString
-  }
 }
+
+class DriverBackedActionRecordCompiler extends ActionRecordCompiler with DriverBackedTestAdapter

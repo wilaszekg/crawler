@@ -7,11 +7,12 @@ import java.util
 import japa.parser.JavaParser
 import japa.parser.ast.`type`.ClassOrInterfaceType
 import japa.parser.ast.body.{BodyDeclaration, ClassOrInterfaceDeclaration, FieldDeclaration, MethodDeclaration}
-import japa.parser.ast.expr.{AssignExpr, MethodCallExpr, NameExpr}
+import japa.parser.ast.expr.{AssignExpr, MethodCallExpr, NameExpr, VariableDeclarationExpr}
 import japa.parser.ast.stmt.{ExpressionStmt, Statement}
 import japa.parser.ast.{CompilationUnit, ImportDeclaration}
 
 import scala.collection.JavaConversions._
+import scala.util.Try
 
 class ClassCompilationUnit(val source: String) {
 
@@ -40,12 +41,20 @@ class ClassCompilationUnit(val source: String) {
     testMethod.setName(newName)
   }
 
-  def removeUsagesOf(fieldName: String, targetMethod: String) = {
+  private def removeStatements(targetMethod: String, predicate: Statement => Boolean) = {
     val method: MethodDeclaration = getMethod(targetMethod)
     val statements: util.List[Statement] = method.getBody.getStmts
-    val fieldUsages = statements.filter(
-      statement => isFieldAssign(fieldName, statement) || usesToCallFunction(fieldName, statement))
+    val fieldUsages = statements.filter(predicate)
     statements.removeAll(fieldUsages)
+  }
+
+  def removeAllUsagesOf(fieldName: String, targetMethod: String) = {
+    removeStatements(targetMethod,
+      statement => isFieldAssign(fieldName, statement) || usesToCallFunction(fieldName, statement))
+  }
+
+  def removeDeclarationOf(fieldName: String, targetMethod: String) = {
+    removeStatements(targetMethod, isFieldDeclaration(fieldName, _))
   }
 
   def setClassName(className: String) = {
@@ -53,13 +62,19 @@ class ClassCompilationUnit(val source: String) {
   }
 
   private def isFieldAssign(fieldName: String, statement: Statement): Boolean = {
-    try {
+    Try {
       statement.asInstanceOf[ExpressionStmt]
         .getExpression.asInstanceOf[AssignExpr]
         .getTarget.asInstanceOf[NameExpr].getName.equals(fieldName)
-    } catch {
-      case e: Throwable => false
-    }
+    } getOrElse false
+  }
+
+  private def isFieldDeclaration(fieldName: String, statement: Statement): Boolean = {
+    Try {
+      statement.asInstanceOf[ExpressionStmt]
+        .getExpression.asInstanceOf[VariableDeclarationExpr]
+        .getVars.exists(_.getId.getName.equals(fieldName))
+    } getOrElse false
   }
 
   private def usesToCallFunction(fieldName: String, statement: Statement): Boolean = {
@@ -78,11 +93,9 @@ class ClassCompilationUnit(val source: String) {
         (methodCall.getScope.isInstanceOf[MethodCallExpr]
           && isCalleeOrArgument(methodCall.getScope.asInstanceOf[MethodCallExpr]))
 
-    try {
+    Try {
       isCalleeOrArgument(statement.asInstanceOf[ExpressionStmt].getExpression.asInstanceOf[MethodCallExpr])
-    } catch {
-      case e: Throwable => false
-    }
+    } getOrElse false
   }
 
   override def toString = compilationUnit.toString
