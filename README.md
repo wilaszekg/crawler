@@ -98,11 +98,18 @@ There are three types of jobs:
 To authenticate a crawler in a web application, you can record your interaction with web page. You have to [download Selenium IDE](http://www.seleniumhq.org/download/) - a firefox plugin.
 
 ## How to record the action
-Open Selenium IDE and start recording (red circle has to be active). Go to the log-in page and just fill in the log-in form. Wait for the page to load, go back to Selenium IDE and select File -> Export Test Case As... -> "Java / JUnit4 / WebDriver".
+Open Selenium IDE and start recording (red circle has to be active). Go to the log-in page and just fill in the log-in form. Wait for the page to load, go back to Selenium IDE and select File -> Export Test Case As... -> "Java / JUnit4 / WebDriver Backed". 
 
 ## How to use recorded action
 Read the content of exported action and pass it to `actionRecordCompiler` object to `compile` method. It will return an instance of `ActionSupplier` which can be used as `authAction` of `ComposedAuthTask`.
 ```
+val actionRecordCompiler = new DriverBackedActionRecordCompiler
 val actionSource = Source.fromURL(getClass.getResource("/ExportedAction")).mkString
 val actionSupplier = actionRecordCompiler.compile(actionSource)
+```
+
+## Alternative way to run login action
+WebDriver Backed is an implementation of old deprecated Selenium interface. Unfortunately, you have to use it if you want Selenium IDE to properly export all features like wating for page to load or for element to be present. Anyway, you can export recorded behaviour as "Java / JUnit4 / WebDriver". To compile it, you will have to use another version of action record compiler:
+```
+val actionRecordCompiler = new ActionRecordCompiler with WebDriverTestAdapter
 ```
