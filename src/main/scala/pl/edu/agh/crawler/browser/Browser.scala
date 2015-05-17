@@ -66,6 +66,10 @@ class Browser(val driver: PhantomJSDriver) extends FluentPage(driver) {
       .asInstanceOf[util.List[util.List[String]]]
       .map(contentAndXpath => RemovedNode(contentAndXpath(0), contentAndXpath(1)))
 
+  def removedLinks: Set[String] =
+    driver.executeScript("return window.removedLinks;")
+      .asInstanceOf[util.List[String]].toSet
+
   def scrollToBottom = {
     for (i <- 0 until 3)
       driver.executeScript("return window.scrollToBottom();")
