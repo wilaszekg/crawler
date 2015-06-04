@@ -15,6 +15,8 @@ The crawler is using [typesafe configs](https://github.com/typesafehub/config), 
 crawler.phantomjs.path = "C:/tools/phantomjs-1.9.8-windows/phantomjs.exe"
 # User Agent to be used by Phantom - OPTIONAL
 crawler.phantomjs.userAgent = "Chrome x.y"
+# indicates if Phatom should load images
+crawler.phantomjs.loadImages = false
 
 # Timeouts - in seconds
 
