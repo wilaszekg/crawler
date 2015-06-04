@@ -12,7 +12,7 @@ object crawlerFactory {
   private def createWebDriver = {
     val capabilities = DesiredCapabilities.phantomjs()
     capabilities.setCapability("phantomjs.binary.path", crawlerConfig.phantomjsPath)
-    capabilities.setCapability("phantomjs.page.settings.loadImages", "false")
+    capabilities.setCapability("phantomjs.page.settings.loadImages", crawlerConfig.phantomLoadImages.toString)
     capabilities.setCapability("phantomjs.cli.args", Array("--proxy-type=none"))
     crawlerConfig.userAgent.foreach {
       capabilities.setCapability("phantomjs.page.settings.userAgent", _)

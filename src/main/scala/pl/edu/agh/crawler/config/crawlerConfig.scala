@@ -14,6 +14,7 @@ object crawlerConfig {
   val scrollEffectAjaxTimeout = config.getInt("crawler.timeout.scrollEffectAjax")
   val scrollEffectRenderTimeout = config.getInt("crawler.timeout.scrollEffectRender")
   val userAgent: Option[String] = Try(config.getString("crawler.phantomjs.userAgent")).toOption
+  val phantomLoadImages = config.getBoolean("crawler.phantomjs.loadImages")
 
   val excludedResources = config.getStringList("crawler.excludedResources")
 }
