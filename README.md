@@ -74,6 +74,12 @@ multiCrawler.crawl(SingleTask(url, List(Crawl(2))))
 This call is blocking and returns as soon as there is free crawler to handle your request. This function returs a promise of crawling result: `Promise[CrawlResult]`.
 To quit all crawlers of the `crawlerPool`, use `quitAll` method.
 
+## Loading images
+Loading images can be enabled in application config. If you want to override this configuration, use `loadImages` parameter when creating a new crawler:
+```
+val crawler = crawlerFactory.createCrawler(loadImages = false)
+```
+
 # Crawling tasks
 A crawling task is description of a task to be performed by a crawler. To create a task, you have to create one of case classes of `pl.edu.agh.crawler.task.CrawlTask`:
 * `SingleTask` - for crawling a single URL:
@@ -96,11 +102,6 @@ There are three types of jobs:
   * `attempts` - how many times to try to scroll. When one attempt fails, there will be no further attempts.
 * `ScreenShot` - taking screen shot
 
-## Loading images
-Loading images can be enabled in application config. If you want to override this configuration, use `loadImages` parameter when creating a new crawler:
-```
-val crawler = crawlerFactory.createCrawler(loadImages = false)
-```
 
 # Recording authentication actions
 To authenticate a crawler in a web application, you can record your interaction with web page. You have to [download Selenium IDE](http://www.seleniumhq.org/download/) - a firefox plugin.
