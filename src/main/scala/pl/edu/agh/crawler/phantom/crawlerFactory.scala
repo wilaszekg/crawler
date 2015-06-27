@@ -7,12 +7,13 @@ import pl.edu.agh.crawler.workers.Crawler
 
 object crawlerFactory {
 
-  def createCrawler = new Crawler(createWebDriver)
+  def createCrawler(loadImages: Boolean = crawlerConfig.phantomLoadImages) =
+    new Crawler(createWebDriver(loadImages))
 
-  private def createWebDriver = {
+  private def createWebDriver(loadImages: Boolean) = {
     val capabilities = DesiredCapabilities.phantomjs()
     capabilities.setCapability("phantomjs.binary.path", crawlerConfig.phantomjsPath)
-    capabilities.setCapability("phantomjs.page.settings.loadImages", crawlerConfig.phantomLoadImages.toString)
+    capabilities.setCapability("phantomjs.page.settings.loadImages", loadImages.toString)
     capabilities.setCapability("phantomjs.cli.args", Array("--proxy-type=none"))
     crawlerConfig.userAgent.foreach {
       capabilities.setCapability("phantomjs.page.settings.userAgent", _)

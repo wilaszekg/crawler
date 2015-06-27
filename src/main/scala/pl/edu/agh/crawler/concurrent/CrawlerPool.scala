@@ -2,12 +2,13 @@ package pl.edu.agh.crawler.concurrent
 
 import java.util.concurrent.LinkedBlockingQueue
 
+import pl.edu.agh.crawler.config.crawlerConfig
 import pl.edu.agh.crawler.phantom.crawlerFactory
 import pl.edu.agh.crawler.workers.Crawler
 
-class CrawlerPool(val size: Int) {
+class CrawlerPool(val size: Int, loadImages: Boolean = crawlerConfig.phantomLoadImages) {
   val crawlers: Seq[Crawler] =
-    for (i <- 0 until size) yield crawlerFactory.createCrawler
+    for (i <- 0 until size) yield crawlerFactory.createCrawler(loadImages)
 
   val freeCrawlers = new LinkedBlockingQueue[Crawler]
   crawlers foreach (freeCrawlers.put(_))
