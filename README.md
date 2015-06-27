@@ -96,6 +96,12 @@ There are three types of jobs:
   * `attempts` - how many times to try to scroll. When one attempt fails, there will be no further attempts.
 * `ScreenShot` - taking screen shot
 
+## Loading images
+Loading images can be enabled in application config. If you want to override this configuration, use `loadImages` parameter when creating a new crawler:
+```
+val crawler = crawlerFactory.createCrawler(loadImages = false)
+```
+
 # Recording authentication actions
 To authenticate a crawler in a web application, you can record your interaction with web page. You have to [download Selenium IDE](http://www.seleniumhq.org/download/) - a firefox plugin.
 
